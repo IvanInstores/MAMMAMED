@@ -1,0 +1,108 @@
+:root {
+  --ink: #111; --soft: #444; --bg: #fff; --line: #cfcfcf;
+  --green: #0a6b2b; --green-bg: #e3f5e8;
+  --orange: #b34700; --orange-bg: #fff1e0;
+  --yellow: #ffd60a; --red: #b00020; --blue: #0b4fa8;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 19px; line-height: 1.35;
+}
+main {
+  max-width: 640px; margin: 0 auto;
+  padding: calc(16px + env(safe-area-inset-top)) 16px calc(40px + env(safe-area-inset-bottom));
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; border: 0; border-radius: 16px; font-weight: 700; touch-action: manipulation; }
+button:disabled { opacity: .5; }
+.loading, .big-msg { text-align: center; font-size: 30px; font-weight: 700; margin: 30vh 0 0; }
+img { max-width: 100%; }
+
+/* ---------- MAMMA: tutto grande ---------- */
+.mom { font-size: 26px; }
+.mom .clock { text-align: center; font-size: 76px; font-weight: 800; line-height: 1; margin: 8px 0 0; }
+.mom .date { text-align: center; font-size: 28px; color: var(--soft); margin: 6px 0 24px; text-transform: capitalize; }
+.mom h1 { font-size: 40px; line-height: 1.1; margin: 0 0 18px; text-align: center; color: var(--orange); }
+.mom h2 { font-size: 30px; margin: 34px 0 10px; }
+.card {
+  border: 5px solid var(--orange); background: var(--orange-bg);
+  border-radius: 24px; padding: 16px; margin: 0 0 26px; text-align: center;
+}
+.card img { width: 100%; max-height: 260px; object-fit: contain; border-radius: 14px; background: #fff; margin-bottom: 12px; }
+.card .when { font-size: 28px; font-weight: 700; color: var(--orange); }
+.card .name { font-size: min(46px, 10vw); font-weight: 800; line-height: 1.1; margin: 6px 0 12px; overflow-wrap: break-word; hyphens: auto; }
+.card .qty { font-size: 36px; font-weight: 700; }
+.card .qty small { display: block; font-size: 24px; font-weight: 600; color: var(--soft); }
+.card .note { font-size: 28px; margin-top: 10px; }
+.btn-take {
+  display: block; width: 100%; min-height: 120px; margin-top: 20px;
+  background: var(--green); color: #fff; font-size: 40px; border-radius: 24px;
+  box-shadow: 0 6px 0 #064d1e;
+}
+.btn-take:active { transform: translateY(4px); box-shadow: 0 2px 0 #064d1e; }
+.calm { text-align: center; background: var(--green-bg); border-radius: 24px; padding: 30px 18px; }
+.calm .face { font-size: 80px; line-height: 1; }
+.calm .t { font-size: 38px; font-weight: 800; color: var(--green); margin: 10px 0; line-height: 1.15; }
+.calm .next { font-size: 30px; }
+.calm .next b { display: block; font-size: 40px; }
+.bravo {
+  position: fixed; inset: 0; background: var(--green); color: #fff; z-index: 10;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-size: 60px; font-weight: 800; text-align: center; padding: 20px;
+}
+.bravo span { font-size: 130px; line-height: 1.1; }
+.btn-alert {
+  display: block; width: 100%; min-height: 110px; padding: 14px;
+  background: var(--yellow); color: #111; font-size: 34px; border: 4px solid #111; margin-bottom: 24px;
+}
+.hint { background: #eef4ff; border: 3px solid var(--blue); border-radius: 18px; padding: 16px; margin-bottom: 24px; font-size: 24px; }
+.daylist { list-style: none; padding: 0; margin: 0; }
+.daylist li {
+  display: grid; grid-template-columns: 4.2em 1fr auto; gap: 10px; align-items: center;
+  padding: 14px 4px; border-bottom: 2px solid var(--line); font-size: 28px;
+}
+.daylist .h { font-weight: 800; }
+.daylist .s { font-size: 36px; }
+.daylist small { display: block; font-size: 22px; color: var(--soft); }
+
+/* ---------- IVAN: pannello ---------- */
+.admin h1 { font-size: 28px; margin: 0 0 4px; }
+.admin .sub { color: var(--soft); margin: 0 0 18px; }
+.admin h2 { font-size: 23px; margin: 30px 0 10px; }
+.box { border: 2px solid var(--line); border-radius: 16px; padding: 14px; margin-bottom: 12px; }
+.row { display: flex; gap: 12px; align-items: center; }
+.row .grow { flex: 1; min-width: 0; }
+.row b { font-size: 21px; overflow-wrap: anywhere; }
+.muted { color: var(--soft); font-size: 17px; }
+.pill { display: inline-block; padding: 4px 12px; border-radius: 999px; font-weight: 700; font-size: 16px; white-space: nowrap; }
+.pill.ok { background: var(--green-bg); color: var(--green); }
+.pill.wait { background: var(--orange-bg); color: var(--orange); }
+.pill.late { background: #fde7ea; color: var(--red); }
+.pill.later { background: #eee; color: var(--soft); }
+.btn { min-height: 52px; padding: 10px 18px; background: #e9e9e9; font-size: 18px; }
+.btn.primary { background: var(--green); color: #fff; }
+.btn.danger { background: #fde7ea; color: var(--red); }
+.btn.wide { display: block; width: 100%; margin-top: 10px; }
+.btn.small { min-height: 44px; padding: 6px 14px; font-size: 16px; }
+.thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 10px; background: #eee; flex: none; }
+label { display: block; font-weight: 700; margin: 16px 0 6px; }
+input[type=text], input[type=number], input[type=time], select, textarea {
+  width: 100%; min-height: 54px; padding: 10px 12px; font-size: 20px;
+  border: 2px solid #777; border-radius: 12px; background: #fff;
+}
+.days { display: flex; gap: 6px; }
+.days button { flex: 1; min-height: 52px; padding: 0; background: #eee; font-size: 17px; border: 2px solid transparent; }
+.days button.on { background: var(--green); color: #fff; }
+.times .row { margin-bottom: 8px; }
+.preview { max-height: 160px; border-radius: 12px; display: block; margin: 8px 0; }
+.status { padding: 12px 14px; border-radius: 12px; font-weight: 700; margin-bottom: 10px; }
+.status.good { background: var(--green-bg); color: var(--green); }
+.status.bad { background: #fde7ea; color: var(--red); }
+.toast {
+  position: fixed; left: 16px; right: 16px; bottom: calc(20px + env(safe-area-inset-bottom));
+  background: #111; color: #fff; padding: 16px; border-radius: 14px; text-align: center;
+  font-weight: 700; z-index: 20; font-size: 20px;
+}
