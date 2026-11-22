@@ -93,3 +93,5 @@ $$;
 
 revoke all on function generate_doses() from public, anon, authenticated;
 revoke all on function today_schedule() from public, anon, authenticated;
+grant execute on function generate_doses() to service_role;
+grant execute on function today_schedule() to service_role;
