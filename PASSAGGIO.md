@@ -137,11 +137,11 @@ Non c'è niente da avviare: sito e server sono già pubblicati. Basta aprire il 
 - Server vero: salvataggio di una medicina, generazione dell'assunzione all'orario esatto, invio dell'avviso, rifiuto dei link sbagliati.
 - Sito pubblicato e telefono di Ivan collegato alle notifiche (visto dal database il 23/11/2026).
 - Ivan ha inserito la prima medicina vera.
-- Il 23/11/2026 il telefono di Ivan era stato ricollegato a `/pillolapp/` (vecchia icona tolta, app installata da quel link) e la notifica di prova "Manda una prova a me" era arrivata **una sola volta**: la pulizia automatica degli avvisi del vecchio indirizzo `/MAMMAMED/` funzionava. **Quel collegamento non vale più**: vedi "In corso".
-- Pulizia allargata (23/11/2026): `app.js` ora spegne gli avvisi legati a qualsiasi indirizzo diverso da quello attuale, quindi anche `/pillolapp/`. Provata in locale con un browser automatico (un indirizzo vecchio finto viene spento, quello attuale resta). Non ancora provata sul telefono.
+- Il 23/11/2026 il telefono di Ivan era stato ricollegato a `/pillolapp/` (vecchia icona tolta, app installata da quel link) e la notifica di prova "Manda una prova a me" era arrivata **una sola volta**: la pulizia automatica degli avvisi del vecchio indirizzo `/MAMMAMED/` funzionava. Quel collegamento è stato poi sostituito da quello a `/PillolAPP/` (riga sotto).
+- Pulizia allargata (23/11/2026): `app.js` ora spegne gli avvisi legati a qualsiasi indirizzo diverso da quello attuale, quindi anche `/pillolapp/`. Provata in locale con un browser automatico (un indirizzo vecchio finto viene spento, quello attuale resta).
+- Telefono di Ivan ricollegato a `/PillolAPP/` (23/11/2026, sera): vecchia icona tolta, app installata dal nuovo indirizzo, "Manda una prova a me" arrivata **una sola volta**. La pulizia allargata funziona anche sul telefono.
 
 ### In corso
-- **Telefono di Ivan da ricollegare a `/PillolAPP/`.** Dopo il secondo cambio nome (23/11/2026, da `pillolapp` a `PillolAPP`) l'indirizzo `/pillolapp/` dà 404: l'icona installata da lì è da togliere. Passaggi: aprire con Chrome il link segreto che parte da `/PillolAPP/`, aggiungerlo alla Home, aprire l'app dalla Home, controllare che "Il mio telefono" dica che le notifiche sono attive, fare "Manda una prova a me" e verificare che arrivi **una sola volta**.
 - **Telefono della mamma non ancora collegato** (si farà quando Ivan avrà il suo telefono in mano). Finché non si fa, a lei non arriva nessun avviso. Passaggi (Android, Chrome):
   1. Dal pannello di Ivan: "Invia il link alla mamma".
   2. Sul suo telefono aprire il link con Chrome.
