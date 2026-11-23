@@ -29,7 +29,9 @@ Regole pratiche:
 | Server (`supabase/functions/api/index.ts`) | Il push non basta: va ripubblicata la funzione `api` su Supabase, **con verifica JWT disattivata** (il server controlla da solo le chiavi) |
 | Database | Nuovo file numerato in `supabase/migrations/` (es. `005_...sql`), da eseguire anche su Supabase. Mai modificare una migrazione già eseguita |
 
-- Archivio: `IvanInstores/pillolapp`. Sito: `https://ivaninstores.github.io/pillolapp/` (i link segreti sono `https://ivaninstores.github.io/pillolapp/?k=<chiave>`).
+- Archivio: `IvanInstores/PillolAPP`. Sito: `https://ivaninstores.github.io/PillolAPP/` (i link segreti sono `https://ivaninstores.github.io/PillolAPP/?k=<chiave>`).
+- **Maiuscole e minuscole contano** nell'indirizzo del sito: va scritto sempre `/PillolAPP/`. I vecchi `/pillolapp/` e `/MAMMAMED/` danno errore 404. Se l'archivio cambia ancora nome, cambia l'indirizzo e i telefoni vanno ricollegati.
+- Si pubblica **solo** sul ramo `claude/medicine-reminder-app-q924p9`: mai pubblicare altri rami.
 - Progetto Supabase: `mammamed`, codice `jqwtcbnfgbfazyjokuzs`.
 - L'app si chiamava MAMMAMED. **Non rinominare i nomi tecnici rimasti**, altrimenti l'app smette di funzionare: `MAMMAMED_API` (in `config.js`, `app.js`, `sw.js`), la chiave salvata sul telefono `mammamed_k`, il job `mammamed-tick`, il progetto Supabase `mammamed`.
 - File nell'archivio e versione online devono restare uguali: se cambi server o database su Supabase, salva la stessa modifica nei file, e viceversa.

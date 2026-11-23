@@ -20,9 +20,10 @@ Requisiti fissati da Ivan: linguaggio semplicissimo, tutto in italiano, testi e 
 
 | Cosa | Valore |
 |---|---|
-| Archivio GitHub | `IvanInstores/pillolapp` (pubblico) |
-| Sito | `https://ivaninstores.github.io/pillolapp/` |
-| Nome precedente | MAMMAMED (archivio `IvanInstores/MAMMAMED`): il vecchio indirizzo `/MAMMAMED/` non funziona più |
+| Archivio GitHub | `IvanInstores/PillolAPP` (pubblico) |
+| Sito | `https://ivaninstores.github.io/PillolAPP/` |
+| **Maiuscole e minuscole contano** | L'indirizzo va scritto esattamente `/PillolAPP/`. Scritto in un altro modo dà errore 404 |
+| Nomi precedenti | Prima MAMMAMED (`/MAMMAMED/`), poi `pillolapp` tutto minuscolo (`/pillolapp/`): entrambi i vecchi indirizzi danno errore 404 |
 | Ramo con la versione più recente | `claude/medicine-reminder-app-q924p9` |
 | Ramo `main` | Non esiste: l'unico ramo è quello sopra, ed è quello pubblicato |
 | Altri rami | Le sessioni cloud di Claude possono creare un ramo di lavoro locale (es. `claude/clever-lamport-j4occ5`): **non va mai pubblicato né cancellato**. Si pubblica solo sul ramo sopra |
@@ -89,13 +90,13 @@ Tutte in `POST` sull'unico indirizzo, con corpo JSON `{ "action": "...", "k": "<
 
 | Servizio | Cosa | Dettagli |
 |---|---|---|
-| **GitHub** | Codice | Archivio `IvanInstores/pillolapp` |
-| **GitHub Pages** | Pubblicazione del sito | Dal ramo `claude/medicine-reminder-app-q924p9`, cartella `/ (root)`. Indirizzo: `https://ivaninstores.github.io/pillolapp/` |
+| **GitHub** | Codice | Archivio `IvanInstores/PillolAPP` |
+| **GitHub Pages** | Pubblicazione del sito | Dal ramo `claude/medicine-reminder-app-q924p9`, cartella `/ (root)`. Indirizzo: `https://ivaninstores.github.io/PillolAPP/` (maiuscole e minuscole contano) |
 | **Supabase** | Database e server | Progetto `mammamed`, codice `jqwtcbnfgbfazyjokuzs`, regione `eu-central-1`, organizzazione "Ivan Personale". Server: `https://jqwtcbnfgbfazyjokuzs.supabase.co/functions/v1/api` |
 | **Servizi push dei browser** | Consegna notifiche | Google (Android/Chrome) e Apple (iPhone): nessun account da gestire |
 
 ### Chiavi di accesso (importante)
-- Non ci sono password. Si entra con due **link segreti**: `https://ivaninstores.github.io/pillolapp/?k=<chiave>`.
+- Non ci sono password. Si entra con due **link segreti**: `https://ivaninstores.github.io/PillolAPP/?k=<chiave>` (partono da `/PillolAPP/`, con le maiuscole: i link salvati con `/pillolapp/` o `/MAMMAMED/` non funzionano più).
 - Le chiavi **non sono in questo archivio**, perché è pubblico. Stanno nella tabella `config` di Supabase, righe `admin_token` (Ivan) e `mom_token` (mamma).
 - Per leggerle: Supabase → progetto `mammamed` → Table Editor → `config`.
 - Per cambiarle (se un link finisce in mani sbagliate): modifica il valore nella tabella. I vecchi link smettono di funzionare e vanno riaperti quelli nuovi su entrambi i telefoni.
@@ -108,7 +109,7 @@ Tutte in `POST` sull'unico indirizzo, con corpo JSON `{ "action": "...", "k": "<
 Non c'è niente da avviare: sito e server sono già pubblicati. Basta aprire il link segreto.
 
 ### Lavorarci dal PC
-1. Scarica l'archivio: `git clone https://github.com/IvanInstores/pillolapp.git`
+1. Scarica l'archivio: `git clone https://github.com/IvanInstores/PillolAPP.git`
 2. Entra nella cartella e passa al ramo: `git checkout claude/medicine-reminder-app-q924p9`
 3. Per vedere l'app in locale serve un piccolo server web (un service worker non funziona aprendo il file con doppio clic). Per esempio: `python -m http.server 8000`, poi apri `http://localhost:8000/?k=<chiave>`.
 4. L'app in locale parla con il server vero: le modifiche ai dati sono reali.
@@ -136,9 +137,11 @@ Non c'è niente da avviare: sito e server sono già pubblicati. Basta aprire il 
 - Server vero: salvataggio di una medicina, generazione dell'assunzione all'orario esatto, invio dell'avviso, rifiuto dei link sbagliati.
 - Sito pubblicato e telefono di Ivan collegato alle notifiche (visto dal database il 23/11/2026).
 - Ivan ha inserito la prima medicina vera.
-- Telefono di Ivan ricollegato al nuovo indirizzo dopo il cambio nome (23/11/2026): vecchia icona tolta, PillolAPP installata dal link `/pillolapp/`. La prova "Manda una prova a me" è arrivata **una sola volta**: la pulizia automatica degli avvisi del vecchio indirizzo (in `app.js`) funziona.
+- Il 23/11/2026 il telefono di Ivan era stato ricollegato a `/pillolapp/` (vecchia icona tolta, app installata da quel link) e la notifica di prova "Manda una prova a me" era arrivata **una sola volta**: la pulizia automatica degli avvisi del vecchio indirizzo `/MAMMAMED/` funzionava. **Quel collegamento non vale più**: vedi "In corso".
+- Pulizia allargata (23/11/2026): `app.js` ora spegne gli avvisi legati a qualsiasi indirizzo diverso da quello attuale, quindi anche `/pillolapp/`. Provata in locale con un browser automatico (un indirizzo vecchio finto viene spento, quello attuale resta). Non ancora provata sul telefono.
 
 ### In corso
+- **Telefono di Ivan da ricollegare a `/PillolAPP/`.** Dopo il secondo cambio nome (23/11/2026, da `pillolapp` a `PillolAPP`) l'indirizzo `/pillolapp/` dà 404: l'icona installata da lì è da togliere. Passaggi: aprire con Chrome il link segreto che parte da `/PillolAPP/`, aggiungerlo alla Home, aprire l'app dalla Home, controllare che "Il mio telefono" dica che le notifiche sono attive, fare "Manda una prova a me" e verificare che arrivi **una sola volta**.
 - **Telefono della mamma non ancora collegato** (si farà quando Ivan avrà il suo telefono in mano). Finché non si fa, a lei non arriva nessun avviso. Passaggi (Android, Chrome):
   1. Dal pannello di Ivan: "Invia il link alla mamma".
   2. Sul suo telefono aprire il link con Chrome.
@@ -179,6 +182,8 @@ Non c'è niente da avviare: sito e server sono già pubblicati. Basta aprire il 
 | Una sola pagina per mamma e Ivan | Meno codice da mantenere: il server riconosce il ruolo dalla chiave |
 | Tutto passa da una sola funzione server | Il database resta chiuso verso l'esterno; un solo punto da controllare |
 | Nome cambiato da MAMMAMED a PillolAPP (23/11/2026) | Scelta di Ivan. Cambiati nome visibile, archivio e indirizzo del sito |
+| Archivio rinominato una seconda volta, da `pillolapp` a `PillolAPP` con le maiuscole (23/11/2026) | Scelta di Ivan. Cambia di nuovo l'indirizzo del sito (maiuscole e minuscole contano) e i telefoni vanno ricollegati |
+| La pulizia in `app.js` spegne gli avvisi di qualsiasi indirizzo diverso da quello attuale, non di un elenco di nomi vecchi (23/11/2026) | Richiesta di Ivan: evita notifiche doppie anche a un prossimo cambio nome. Attenzione: vale per tutto `ivaninstores.github.io`, quindi spegnerebbe anche gli avvisi di un'eventuale altra app con notifiche pubblicata sullo stesso account GitHub. Oggi non ce ne sono; se ne nasce una, la pulizia va ristretta |
 | Nomi tecnici lasciati com'erano (`MAMMAMED_API`, `mammamed_k`, `mammamed-tick`, progetto Supabase `mammamed`, commenti nelle migrazioni e nel server) | Rinominarli non porta nulla all'utente e rischia di rompere l'app: la chiave salvata sui telefoni andrebbe persa e il server andrebbe ripubblicato |
 | Progetto Supabase separato (`mammamed`) | Scelta di Ivan: non mescolare con il progetto esistente "bilancio" |
 | Chiavi fuori dall'archivio | L'archivio è pubblico (necessario per GitHub Pages gratuito) |

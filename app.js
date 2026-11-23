@@ -500,9 +500,11 @@
     if (!K) return badLink();
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("sw.js").catch(() => {});
-      // pulizia: spegne gli avvisi rimasti legati al vecchio indirizzo /MAMMAMED/ (prima del cambio nome)
+      // pulizia: spegne gli avvisi rimasti legati a QUALSIASI indirizzo diverso da quello attuale
+      // (vecchi nomi /MAMMAMED/ e /pillolapp/: maiuscole e minuscole contano), così non arrivano notifiche doppie
+      const here = new URL("./", location.href).href;
       navigator.serviceWorker.getRegistrations().then((regs) => regs.forEach(async (r) => {
-        if (!new URL(r.scope).pathname.startsWith("/MAMMAMED/")) return;
+        if (r.scope === here) return;
         try { await (await r.pushManager.getSubscription())?.unsubscribe(); } catch (_) {}
         r.unregister();
       })).catch(() => {});
