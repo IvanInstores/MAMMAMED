@@ -1,4 +1,4 @@
-# CLAUDE.md – Regole permanenti del progetto MAMMAMED
+# CLAUDE.md – Regole permanenti del progetto PillolAPP
 
 ## All'inizio di ogni sessione
 1. Leggi `PASSAGGIO.md`: contiene cos'è il progetto, com'è fatto, lo stato del lavoro e le decisioni prese.
@@ -29,7 +29,9 @@ Regole pratiche:
 | Server (`supabase/functions/api/index.ts`) | Il push non basta: va ripubblicata la funzione `api` su Supabase, **con verifica JWT disattivata** (il server controlla da solo le chiavi) |
 | Database | Nuovo file numerato in `supabase/migrations/` (es. `005_...sql`), da eseguire anche su Supabase. Mai modificare una migrazione già eseguita |
 
+- Archivio: `IvanInstores/pillolapp`. Sito: `https://ivaninstores.github.io/pillolapp/` (i link segreti sono `https://ivaninstores.github.io/pillolapp/?k=<chiave>`).
 - Progetto Supabase: `mammamed`, codice `jqwtcbnfgbfazyjokuzs`.
+- L'app si chiamava MAMMAMED. **Non rinominare i nomi tecnici rimasti**, altrimenti l'app smette di funzionare: `MAMMAMED_API` (in `config.js`, `app.js`, `sw.js`), la chiave salvata sul telefono `mammamed_k`, il job `mammamed-tick`, il progetto Supabase `mammamed`.
 - File nell'archivio e versione online devono restare uguali: se cambi server o database su Supabase, salva la stessa modifica nei file, e viceversa.
 - Il server è in uso reale: una modifica sbagliata può far saltare un avviso di medicina. Prova prima in locale e dichiara cosa è stato verificato e cosa no.
 

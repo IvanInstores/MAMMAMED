@@ -1,4 +1,6 @@
-# MAMMAMED – Promemoria medicine
+# PillolAPP – Promemoria medicine
+
+Sito: `https://ivaninstores.github.io/pillolapp/` · Archivio: `IvanInstores/pillolapp` · Nome precedente: MAMMAMED
 
 App semplicissima: la mamma riceve l'avviso (nome, quantità, tipo, foto) e conferma con un tocco. Ivan gestisce tutto dal suo telefono.
 

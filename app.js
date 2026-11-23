@@ -1,4 +1,4 @@
-/* MAMMAMED - app unica: la mamma vede gli avvisi, Ivan gestisce le medicine */
+/* PillolAPP - app unica: la mamma vede gli avvisi, Ivan gestisce le medicine */
 (() => {
   const API = window.MAMMAMED_API;
   const $app = document.getElementById("app");
@@ -110,7 +110,7 @@
     if (pushOn) return "";
     if (!pushSupported) {
       return isIOS && !isStandalone
-        ? `<div class="hint"><b>Per ricevere gli avvisi:</b><br>1. Tocca il tasto <b>Condividi</b> in basso<br>2. Scegli <b>«Aggiungi a Home»</b><br>3. Apri l'app <b>Medicine</b> dalla schermata Home</div>`
+        ? `<div class="hint"><b>Per ricevere gli avvisi:</b><br>1. Tocca il tasto <b>Condividi</b> in basso<br>2. Scegli <b>«Aggiungi a Home»</b><br>3. Apri l'app <b>PillolAPP</b> dalla schermata Home</div>`
         : `<div class="hint">Questo telefono non riesce a mandare gli avvisi. Tieni aperta questa pagina.</div>`;
     }
     if (Notification.permission === "denied") {
@@ -422,7 +422,7 @@
       }
       if (t.id === "share") {
         const url = momLink();
-        if (navigator.share) return navigator.share({ title: "Medicine", url }).catch(() => {});
+        if (navigator.share) return navigator.share({ title: "PillolAPP", url }).catch(() => {});
         try { await navigator.clipboard.writeText(url); toast("Link copiato"); }
         catch (_) { prompt("Copia questo link:", url); }
         return;
@@ -498,7 +498,15 @@
   async function start() {
     if (!API) return ($app.innerHTML = `<p class="big-msg">App non ancora collegata.</p>`);
     if (!K) return badLink();
-    if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js").catch(() => {});
+      // pulizia: spegne gli avvisi rimasti legati al vecchio indirizzo /MAMMAMED/ (prima del cambio nome)
+      navigator.serviceWorker.getRegistrations().then((regs) => regs.forEach(async (r) => {
+        if (!new URL(r.scope).pathname.startsWith("/MAMMAMED/")) return;
+        try { await (await r.pushManager.getSubscription())?.unsubscribe(); } catch (_) {}
+        r.unregister();
+      })).catch(() => {});
+    }
 
     let hello;
     try {

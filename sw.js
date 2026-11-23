@@ -6,7 +6,7 @@ self.addEventListener("activate", (e) => e.waitUntil(self.clients.claim()));
 
 self.addEventListener("push", (e) => {
   let d = {};
-  try { d = e.data.json(); } catch (_) { d = { title: "Medicine", body: "" }; }
+  try { d = e.data.json(); } catch (_) { d = { title: "PillolAPP", body: "" }; }
   const opts = {
     body: d.body || "",
     tag: d.tag || "mammamed",
@@ -19,7 +19,7 @@ self.addEventListener("push", (e) => {
     data: d,
   };
   if (d.doseId) opts.actions = [{ action: "taken", title: "✅ L'HO PRESA" }];
-  e.waitUntil(self.registration.showNotification(d.title || "Medicine", opts));
+  e.waitUntil(self.registration.showNotification(d.title || "PillolAPP", opts));
 });
 
 self.addEventListener("notificationclick", (e) => {
