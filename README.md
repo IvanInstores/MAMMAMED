@@ -16,6 +16,8 @@ App semplicissima: la mamma riceve l'avviso (nome, quantità, tipo, foto) e conf
 - Se non conferma, l'avviso si ripete (default ogni 10 minuti, massimo 12 volte).
 - Dopo 30 minuti senza conferma (modificabile) arriva un allarme a Ivan.
 - Quando la mamma tocca **L'HO PRESA**, Ivan riceve la conferma.
+- Fine terapia (facoltativa): dopo quella data, compresa, la medicina non manda più avvisi.
+- Stessa medicina più volte al giorno: un orario per ogni assunzione.
 - Fuso orario: Italia. Nessuna password: si entra con due link segreti (uno per Ivan, uno per la mamma).
 
 ## Installazione (una volta sola)

@@ -27,6 +27,11 @@
 
   const fmtTime = (iso) =>
     new Date(iso).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Rome" });
+  const todayRome = () => new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Rome" });
+  const fmtDate = (ymd) => {
+    const [y, m, d] = ymd.split("-").map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
+  };
   const fmtDay = (iso) =>
     new Date(iso).toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short", timeZone: "Europe/Rome" });
 
@@ -256,11 +261,15 @@
       const img = safeImg(m.photo);
       const days = m.days.length === 7 ? "tutti i giorni"
         : DAYS.filter(([n]) => m.days.includes(n)).map(([, l]) => l).join(", ");
-      h += `<div class="box row" ${m.active ? "" : 'style="opacity:.55"'}>
+      const ended = m.end_date && m.end_date < todayRome();
+      const endTxt = !m.end_date ? "" : ended
+        ? `<div class="muted"><b>🏁 TERAPIA FINITA il ${fmtDate(m.end_date)}</b></div>`
+        : `<div class="muted">🏁 Fino al ${fmtDate(m.end_date)}</div>`;
+      h += `<div class="box row" ${m.active && !ended ? "" : 'style="opacity:.55"'}>
         ${img ? `<img class="thumb" src="${img}" alt="">` : ""}
         <div class="grow"><b>${esc(m.name)}</b>
         <div class="muted">${esc(m.dose)}${m.kind ? " · " + esc(m.kind) : ""}</div>
-        <div class="muted">🕒 ${esc(m.times.join(" · "))} — ${days}${m.active ? "" : " — IN PAUSA"}</div></div>
+        <div class="muted">🕒 ${esc(m.times.join(" · "))} — ${days}${m.active ? "" : " — IN PAUSA"}</div>${endTxt}</div>
         <button class="btn small" data-edit="${esc(m.id)}">Modifica</button></div>`;
     }
     h += `<button class="btn primary wide" id="add">＋ Aggiungi medicina</button>`;
@@ -306,15 +315,19 @@
       <label for="f-kind">Tipo</label>
       <select id="f-kind"><option value="">—</option>${KINDS.map((k) =>
         `<option ${k === m.kind ? "selected" : ""}>${k}</option>`).join("")}</select>
-      <label>Orari</label>
+      <label>Orari (un orario per ogni volta che la prende nel giorno)</label>
       <div class="times">${m.times.map((t, i) => `<div class="row">
         <input type="time" data-time="${i}" value="${esc(t)}" aria-label="Orario ${i + 1}">
         ${m.times.length > 1 ? `<button class="btn danger small" data-deltime="${i}" aria-label="Togli orario">✕</button>` : ""}
         </div>`).join("")}</div>
-      <button class="btn small" id="addtime">＋ Aggiungi orario</button>
+      <button class="btn small" id="addtime">＋ Aggiungi un altro orario</button>
       <label>Giorni</label>
       <div class="days">${DAYS.map(([n, l]) =>
         `<button type="button" data-day="${n}" class="${m.days.includes(n) ? "on" : ""}" aria-pressed="${m.days.includes(n)}">${l}</button>`).join("")}</div>
+      <label for="f-end">Fine terapia (facoltativa)</label>
+      <div class="row"><input type="date" id="f-end" class="grow" min="${todayRome()}" value="${esc(m.end_date || "")}">
+        ${m.end_date ? `<button class="btn small" id="clearend">Senza fine</button>` : ""}</div>
+      <div class="muted">L'ultimo giorno di avvisi è quello che scegli. Se la lasci vuota, continua sempre.</div>
       <label for="f-note">Nota per la mamma (facoltativa)</label>
       <input type="text" id="f-note" maxlength="200" placeholder="Es. Dopo mangiato, con acqua" value="${esc(m.note)}">
       <label for="f-photo">Foto della scatola (facoltativa)</label>
@@ -335,6 +348,7 @@
     editing.dose = v("f-dose");
     editing.kind = v("f-kind");
     editing.note = v("f-note");
+    editing.end_date = v("f-end") || null;
     editing.active = document.getElementById("f-active").checked;
     editing.times = [...document.querySelectorAll("[data-time]")].map((i) => i.value);
   }
@@ -400,7 +414,7 @@
         return renderForm();
       }
       if (t.id === "add") {
-        editing = { name: "", dose: "", kind: "", note: "", photo: null, times: ["08:00"], days: [0, 1, 2, 3, 4, 5, 6], active: true };
+        editing = { name: "", dose: "", kind: "", note: "", photo: null, end_date: null, times: ["08:00"], days: [0, 1, 2, 3, 4, 5, 6], active: true };
         return renderForm();
       }
       if (t.id === "share") {
@@ -437,6 +451,7 @@
       }
       if (d.deltime !== undefined) { readForm(); editing.times.splice(Number(d.deltime), 1); return renderForm(); }
       if (t.id === "addtime") { readForm(); editing.times.push("12:00"); return renderForm(); }
+      if (t.id === "clearend") { readForm(); editing.end_date = null; return renderForm(); }
       if (t.id === "delphoto") { readForm(); editing.photo = null; editing.photoChanged = true; return renderForm(); }
       if (t.id === "cancel") { editing = null; return renderAdmin(); }
       if (t.id === "del-med") {
@@ -451,7 +466,8 @@
         if (!m.name || !m.dose) return toast("Scrivi nome e quantità");
         if (!m.times.length || m.times.some((x) => !x)) return toast("Controlla gli orari");
         if (!m.days.length) return toast("Scegli almeno un giorno");
-        const med = { id: m.id, name: m.name, dose: m.dose, kind: m.kind, note: m.note, times: m.times, days: m.days, active: m.active };
+        if (new Set(m.times).size !== m.times.length) return toast("Ci sono due orari uguali");
+        const med = { id: m.id, name: m.name, dose: m.dose, kind: m.kind, note: m.note, times: m.times, days: m.days, active: m.active, end_date: m.end_date || null };
         if (m.photoChanged) med.photo = m.photo;
         t.disabled = true;
         try {

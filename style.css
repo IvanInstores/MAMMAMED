@@ -89,7 +89,7 @@ img { max-width: 100%; }
 .btn.small { min-height: 44px; padding: 6px 14px; font-size: 16px; }
 .thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 10px; background: #eee; flex: none; }
 label { display: block; font-weight: 700; margin: 16px 0 6px; }
-input[type=text], input[type=number], input[type=time], select, textarea {
+input[type=text], input[type=number], input[type=time], input[type=date], select, textarea {
   width: 100%; min-height: 54px; padding: 10px 12px; font-size: 20px;
   border: 2px solid #777; border-radius: 12px; background: #fff;
 }

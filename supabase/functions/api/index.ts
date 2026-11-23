@@ -200,6 +200,9 @@ async function saveMed(m: Record<string, unknown>) {
   if (!row.name || !row.dose || !times.length || !days.length) {
     return { error: "Mancano dei dati: nome, quantità, orario e giorni." };
   }
+  const end = m.end_date ? String(m.end_date) : null;
+  if (end && !/^\d{4}-\d{2}-\d{2}$/.test(end)) return { error: "Data di fine non valida." };
+  row.end_date = end;
   if (m.photo !== undefined) {
     const p = m.photo === null ? null : String(m.photo);
     if (p && (!p.startsWith("data:image/") || p.length > 400_000)) return { error: "Foto non valida." };
