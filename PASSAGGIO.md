@@ -25,6 +25,7 @@ Requisiti fissati da Ivan: linguaggio semplicissimo, tutto in italiano, testi e 
 | Nome precedente | MAMMAMED (archivio `IvanInstores/MAMMAMED`): il vecchio indirizzo `/MAMMAMED/` non funziona più |
 | Ramo con la versione più recente | `claude/medicine-reminder-app-q924p9` |
 | Ramo `main` | Non esiste: l'unico ramo è quello sopra, ed è quello pubblicato |
+| Altri rami | Le sessioni cloud di Claude possono creare un ramo di lavoro locale (es. `claude/clever-lamport-j4occ5`): **non va mai pubblicato né cancellato**. Si pubblica solo sul ramo sopra |
 
 ---
 
@@ -135,10 +136,10 @@ Non c'è niente da avviare: sito e server sono già pubblicati. Basta aprire il 
 - Server vero: salvataggio di una medicina, generazione dell'assunzione all'orario esatto, invio dell'avviso, rifiuto dei link sbagliati.
 - Sito pubblicato e telefono di Ivan collegato alle notifiche (visto dal database il 23/11/2026).
 - Ivan ha inserito la prima medicina vera.
+- Telefono di Ivan ricollegato al nuovo indirizzo dopo il cambio nome (23/11/2026): vecchia icona tolta, PillolAPP installata dal link `/pillolapp/`. La prova "Manda una prova a me" è arrivata **una sola volta**: la pulizia automatica degli avvisi del vecchio indirizzo (in `app.js`) funziona.
 
 ### In corso
-- **Dopo il cambio nome (23/11/2026) i telefoni vanno ricollegati al nuovo indirizzo.** Il vecchio `/MAMMAMED/` non funziona più, quindi l'icona installata prima è da togliere. Sul telefono di Ivan: aprire il link nuovo con Chrome, aggiungerlo alla Home, controllare che "Il mio telefono" dica che le notifiche sono attive e fare una prova. Da verificare che la pulizia automatica degli avvisi del vecchio indirizzo (in `app.js`) funzioni davvero sul telefono.
-- **Telefono della mamma non ancora collegato.** Finché non si fa, a lei non arriva nessun avviso. Passaggi (Android, Chrome):
+- **Telefono della mamma non ancora collegato** (si farà quando Ivan avrà il suo telefono in mano). Finché non si fa, a lei non arriva nessun avviso. Passaggi (Android, Chrome):
   1. Dal pannello di Ivan: "Invia il link alla mamma".
   2. Sul suo telefono aprire il link con Chrome.
   3. Menu ⋮ → "Aggiungi a schermata Home", poi aprire l'app **PillolAPP** dalla Home.
@@ -147,7 +148,7 @@ Non c'è niente da avviare: sito e server sono già pubblicati. Basta aprire il 
   6. Dal pannello: "Manda un avviso di prova alla mamma".
 
 ### Non ancora provato
-- Notifica reale ricevuta su un telefono, e tasto "L'HO PRESA" dentro la notifica.
+- Notifica reale ricevuta sul telefono della mamma, e tasto "L'HO PRESA" dentro la notifica (sul telefono di Ivan la notifica di prova arriva).
 - Giro completo sul server vero con quantità diverse per orario e con fine terapia scaduta (le modifiche sono caricate senza errori, ma verificate solo in locale).
 - Comportamento su iPhone.
 - Costo del progetto Supabase: da controllare nel pannello che sia sul piano gratuito.
@@ -187,6 +188,7 @@ Non c'è niente da avviare: sito e server sono già pubblicati. Basta aprire il 
 | Più assunzioni al giorno: una riga per assunzione con orario e quantità propri | Richiesta di Ivan: la stessa medicina può avere dosi diverse (es. 1 compressa al mattino, mezza alla sera) |
 | Conferma anche dal tasto dentro la notifica (Android) | "Un clic" come richiesto; se la chiamata fallisce si apre l'app |
 | Ivan può segnare o annullare una conferma dal pannello | Per correggere errori o registrare una conferma avuta al telefono |
+| Si pubblica solo su `claude/medicine-reminder-app-q924p9`; il ramo locale della sessione cloud resta locale (23/11/2026) | Scelta di Ivan: un solo ramo su GitHub, che è anche quello del sito |
 
 ---
 
