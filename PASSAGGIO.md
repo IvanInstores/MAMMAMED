@@ -50,6 +50,8 @@ Requisiti fissati da Ivan: linguaggio semplicissimo, tutto in italiano, testi e 
 | `supabase/migrations/003_end_date.sql` | Fine terapia |
 | `supabase/migrations/004_time_doses.sql` | Quantità diversa per ogni orario |
 | `README.md` | Riassunto breve |
+| `CLAUDE.md` | Regole permanenti del progetto per chi ci lavora con Claude |
+| `PASSAGGIO.md` | Questo documento: va letto a inizio sessione e aggiornato a ogni novità |
 
 ### Tabelle del database
 | Tabella | Contenuto |
