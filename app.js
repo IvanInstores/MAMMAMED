@@ -217,6 +217,7 @@
   let ov = null;       // dati dal server
   let editing = null;  // medicina in modifica
 
+  const doseAt = (m, t) => (m.time_doses && m.time_doses[t]) || m.dose;
   const momLink = () => new URL("./?k=" + ov.mom_token, location.href).href;
 
   function renderAdmin() {
@@ -268,8 +269,9 @@
       h += `<div class="box row" ${m.active && !ended ? "" : 'style="opacity:.55"'}>
         ${img ? `<img class="thumb" src="${img}" alt="">` : ""}
         <div class="grow"><b>${esc(m.name)}</b>
-        <div class="muted">${esc(m.dose)}${m.kind ? " · " + esc(m.kind) : ""}</div>
-        <div class="muted">🕒 ${esc(m.times.join(" · "))} — ${days}${m.active ? "" : " — IN PAUSA"}</div>${endTxt}</div>
+        ${m.kind ? `<div class="muted">${esc(m.kind)}</div>` : ""}
+        ${m.times.map((x) => `<div class="muted">🕒 ${esc(x)} → ${esc(doseAt(m, x))}</div>`).join("")}
+        <div class="muted">${days}${m.active ? "" : " — IN PAUSA"}</div>${endTxt}</div>
         <button class="btn small" data-edit="${esc(m.id)}">Modifica</button></div>`;
     }
     h += `<button class="btn primary wide" id="add">＋ Aggiungi medicina</button>`;
@@ -310,15 +312,14 @@
     $app.innerHTML = `<div class="admin"><h1>${m.id ? "Modifica medicina" : "Nuova medicina"}</h1>
       <label for="f-name">Nome della medicina</label>
       <input type="text" id="f-name" maxlength="80" placeholder="Es. Cardioaspirina" value="${esc(m.name)}">
-      <label for="f-dose">Quantità</label>
-      <input type="text" id="f-dose" maxlength="80" placeholder="Es. 1 compressa, 20 gocce" value="${esc(m.dose)}">
       <label for="f-kind">Tipo</label>
       <select id="f-kind"><option value="">—</option>${KINDS.map((k) =>
         `<option ${k === m.kind ? "selected" : ""}>${k}</option>`).join("")}</select>
-      <label>Orari (un orario per ogni volta che la prende nel giorno)</label>
-      <div class="times">${m.times.map((t, i) => `<div class="row">
-        <input type="time" data-time="${i}" value="${esc(t)}" aria-label="Orario ${i + 1}">
-        ${m.times.length > 1 ? `<button class="btn danger small" data-deltime="${i}" aria-label="Togli orario">✕</button>` : ""}
+      <label>Orari e quantità (una riga per ogni volta che la prende nel giorno)</label>
+      <div class="times">${m.slots.map((sl, i) => `<div class="row">
+        <input type="time" data-time="${i}" value="${esc(sl.time)}" aria-label="Orario ${i + 1}">
+        <input type="text" class="grow" data-dose="${i}" maxlength="80" placeholder="Es. 1 compressa" value="${esc(sl.dose)}" aria-label="Quantità ${i + 1}">
+        ${m.slots.length > 1 ? `<button class="btn danger small" data-deltime="${i}" aria-label="Togli orario">✕</button>` : ""}
         </div>`).join("")}</div>
       <button class="btn small" id="addtime">＋ Aggiungi un altro orario</button>
       <label>Giorni</label>
@@ -345,12 +346,14 @@
   function readForm() {
     const v = (id) => document.getElementById(id)?.value.trim() ?? "";
     editing.name = v("f-name");
-    editing.dose = v("f-dose");
     editing.kind = v("f-kind");
     editing.note = v("f-note");
     editing.end_date = v("f-end") || null;
     editing.active = document.getElementById("f-active").checked;
-    editing.times = [...document.querySelectorAll("[data-time]")].map((i) => i.value);
+    editing.slots = [...document.querySelectorAll("[data-time]")].map((el, i) => ({
+      time: el.value,
+      dose: document.querySelector(`[data-dose="${i}"]`).value.trim(),
+    }));
   }
 
   function shrinkPhoto(file) {
@@ -410,11 +413,11 @@
       if (d.undo) return act(() => api("unconfirm", { dose_id: d.undo }), "Conferma annullata");
       if (d.edit) {
         const m = ov.medicines.find((x) => x.id === d.edit);
-        editing = { ...m, times: [...m.times], days: [...m.days] };
+        editing = { ...m, days: [...m.days], slots: m.times.map((x) => ({ time: x, dose: doseAt(m, x) })) };
         return renderForm();
       }
       if (t.id === "add") {
-        editing = { name: "", dose: "", kind: "", note: "", photo: null, end_date: null, times: ["08:00"], days: [0, 1, 2, 3, 4, 5, 6], active: true };
+        editing = { name: "", kind: "", note: "", photo: null, end_date: null, slots: [{ time: "08:00", dose: "" }], days: [0, 1, 2, 3, 4, 5, 6], active: true };
         return renderForm();
       }
       if (t.id === "share") {
@@ -449,8 +452,8 @@
         editing.days = editing.days.includes(n) ? editing.days.filter((x) => x !== n) : [...editing.days, n];
         return renderForm();
       }
-      if (d.deltime !== undefined) { readForm(); editing.times.splice(Number(d.deltime), 1); return renderForm(); }
-      if (t.id === "addtime") { readForm(); editing.times.push("12:00"); return renderForm(); }
+      if (d.deltime !== undefined) { readForm(); editing.slots.splice(Number(d.deltime), 1); return renderForm(); }
+      if (t.id === "addtime") { readForm(); editing.slots.push({ time: "", dose: editing.slots[editing.slots.length - 1].dose }); return renderForm(); }
       if (t.id === "clearend") { readForm(); editing.end_date = null; return renderForm(); }
       if (t.id === "delphoto") { readForm(); editing.photo = null; editing.photoChanged = true; return renderForm(); }
       if (t.id === "cancel") { editing = null; return renderAdmin(); }
@@ -463,11 +466,14 @@
       if (t.id === "save-med") {
         readForm();
         const m = editing;
-        if (!m.name || !m.dose) return toast("Scrivi nome e quantità");
-        if (!m.times.length || m.times.some((x) => !x)) return toast("Controlla gli orari");
+        const times = m.slots.map((x) => x.time);
+        if (!m.name) return toast("Scrivi il nome della medicina");
+        if (!times.length || times.some((x) => !x)) return toast("Controlla gli orari");
+        if (m.slots.some((x) => !x.dose)) return toast("Scrivi la quantità per ogni orario");
         if (!m.days.length) return toast("Scegli almeno un giorno");
-        if (new Set(m.times).size !== m.times.length) return toast("Ci sono due orari uguali");
-        const med = { id: m.id, name: m.name, dose: m.dose, kind: m.kind, note: m.note, times: m.times, days: m.days, active: m.active, end_date: m.end_date || null };
+        if (new Set(times).size !== times.length) return toast("Ci sono due orari uguali");
+        const time_doses = Object.fromEntries(m.slots.map((x) => [x.time, x.dose]));
+        const med = { id: m.id, name: m.name, dose: m.slots[0].dose, time_doses, kind: m.kind, note: m.note, times, days: m.days, active: m.active, end_date: m.end_date || null };
         if (m.photoChanged) med.photo = m.photo;
         t.disabled = true;
         try {

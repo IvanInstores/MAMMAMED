@@ -106,3 +106,4 @@ input[type=text], input[type=number], input[type=time], input[type=date], select
   background: #111; color: #fff; padding: 16px; border-radius: 14px; text-align: center;
   font-weight: 700; z-index: 20; font-size: 20px;
 }
+.times input[type=time] { width: 8.2em; flex: none; padding: 10px 8px; }

@@ -200,6 +200,10 @@ async function saveMed(m: Record<string, unknown>) {
   if (!row.name || !row.dose || !times.length || !days.length) {
     return { error: "Mancano dei dati: nome, quantità, orario e giorni." };
   }
+  const td = (m.time_doses && typeof m.time_doses === "object" ? m.time_doses : {}) as Record<string, unknown>;
+  const timeDoses: Record<string, string> = {};
+  for (const t of times) timeDoses[t] = str(td[t], 80) || (row.dose as string);
+  row.time_doses = timeDoses;
   const end = m.end_date ? String(m.end_date) : null;
   if (end && !/^\d{4}-\d{2}-\d{2}$/.test(end)) return { error: "Data di fine non valida." };
   row.end_date = end;
