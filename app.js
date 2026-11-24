@@ -1,6 +1,8 @@
 /* PillolAPP - app unica: la mamma vede gli avvisi, Ivan gestisce le medicine */
 (() => {
   const API = window.MAMMAMED_API;
+  // versione dell'app: a ogni pubblicazione va cambiata QUI e in version.json (stesso valore)
+  const VERSION = "2026-11-24.1";
   const $app = document.getElementById("app");
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -105,16 +107,17 @@
   let momLast = "";
   let momData = null;
   let lastBeep = 0;
+  let momOffline = false; // true quando l'ultimo aggiornamento non è riuscito
 
   function momAlertBlock() {
     if (pushOn) return "";
     if (!pushSupported) {
       return isIOS && !isStandalone
         ? `<div class="hint"><b>Per ricevere gli avvisi:</b><br>1. Tocca il tasto <b>Condividi</b> in basso<br>2. Scegli <b>«Aggiungi a Home»</b><br>3. Apri l'app <b>PillolAPP</b> dalla schermata Home</div>`
-        : `<div class="hint">Questo telefono non riesce a mandare gli avvisi. Tieni aperta questa pagina.</div>`;
+        : `<div class="hint">Su questo telefono gli avvisi non funzionano.<br><b>Chiama Ivan.</b></div>`;
     }
     if (Notification.permission === "denied") {
-      return `<div class="hint">Gli avvisi sono bloccati. Chiedi aiuto a Ivan.</div>`;
+      return `<div class="hint">Gli avvisi sono spenti.<br><b>Chiama Ivan.</b></div>`;
     }
     return `<button class="btn-alert" id="enable">🔔 TOCCA QUI PER ATTIVARE GLI AVVISI</button>`;
   }
@@ -122,13 +125,22 @@
   function renderMom(force) {
     const d = momData;
     const now = new Date();
-    const key = JSON.stringify([d, pushOn, now.getHours(), now.getMinutes()]);
+    if (!d) {
+      if (momOffline) $app.innerHTML = `<p class="big-msg">Manca la connessione.<br>Riprovo da solo…</p>`;
+      return;
+    }
+    const key = JSON.stringify([d, pushOn, momOffline, now.getHours(), now.getMinutes()]);
     if (!force && key === momLast) return;
     momLast = key;
 
     const clock = now.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
     const date = now.toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" });
-    let h = `<div class="mom"><div class="clock">${clock}</div><div class="date">${date}</div>${momAlertBlock()}`;
+    let h = `<div class="mom${d.pending.length ? " busy" : ""}"><div class="top"><div class="clock">${clock}</div><div class="date">${date}</div></div>`;
+    if (momOffline) {
+      h += `<div class="offline" role="alert"><div class="t">⚠️ Manca la connessione</div>
+        Non so dirti se è ora di una medicina.<br><b>Chiama Ivan.</b></div>`;
+    }
+    h += momAlertBlock();
 
     if (d.pending.length) {
       h += `<h1>${d.pending.length === 1 ? "È ora della medicina" : "È ora delle medicine"}</h1>`;
@@ -143,11 +155,11 @@
           <button class="btn-take" data-take="${esc(p.id)}">✅ L'HO PRESA</button>
         </section>`;
       }
-    } else {
+    } else if (!momOffline) {
       const next = d.today.find((t) => !t.taken_at && new Date(t.due_at) > now);
       h += `<div class="calm"><div class="face">😊</div><div class="t">Adesso non devi prendere niente</div>
         ${next
-          ? `<div class="next">La prossima medicina è alle<b>ore ${esc(next.time)}</b></div>`
+          ? `<div class="next">La prossima medicina è alle<b>ore ${esc(next.time)}</b><span class="nextname">${esc(next.name)}</span></div>`
           : `<div class="next">Per oggi hai finito. Brava!</div>`}</div>`;
     }
 
@@ -164,23 +176,70 @@
     }
     h += `</div>`;
     $app.innerHTML = h;
+    fitCard();
+    $app.querySelector(".card img")?.addEventListener("load", fitCard);
+  }
+
+  // La prima scheda deve stare tutta nello schermo, tasto verde compreso, senza scorrere:
+  // se non ci sta rimpicciolisce prima la foto, poi le scritte. Niente finisce sotto il tasto.
+  function fitCard() {
+    const card = $app.querySelector(".card");
+    if (!card) return;
+    const img = card.querySelector("img");
+    card.classList.remove("tight");
+    if (img) img.style.maxHeight = "";
+    const over = () => Math.ceil(card.getBoundingClientRect().bottom + scrollY + 6 - innerHeight);
+    const shrink = (min) => {
+      const o = over();
+      if (o > 0 && img) img.style.maxHeight = Math.max(min, Math.floor(img.getBoundingClientRect().height - o)) + "px";
+    };
+    shrink(110);
+    if (over() <= 0) return;
+    card.classList.add("tight");
+    if (img) img.style.maxHeight = "";
+    shrink(64);
   }
 
   async function momRefresh() {
     try {
       momData = await api("state");
+      momOffline = false;
       renderMom();
+      if (updateWaiting && !momData.pending.length) checkVersion();
       if (momData.pending.length && Date.now() - lastBeep > 25000 && document.visibilityState === "visible") {
         lastBeep = Date.now();
         beep();
       }
     } catch (e) {
       if (e.status === 401) return badLink();
-      // senza rete: lascia quello che c'è e riprova
+      // senza rete: lo dice chiaramente (la schermata potrebbe essere vecchia) e riprova da solo
+      momOffline = true;
+      renderMom();
     }
   }
 
+  // errore a tutto schermo: resta finché non tocca il tasto
+  function momOops(doseId) {
+    document.querySelector(".oops")?.remove();
+    const o = document.createElement("div");
+    o.className = "oops";
+    o.setAttribute("role", "alertdialog");
+    o.innerHTML = `<div class="t">⚠️ Non è stata segnata</div>
+      <p>Tocca di nuovo il tasto verde.</p><p>Se non funziona, <b>chiama Ivan.</b></p>
+      <button class="btn-oops">HO CAPITO</button>`;
+    o.querySelector("button").addEventListener("click", () => {
+      o.remove();
+      // torna sul tasto verde di quella medicina, pronto per riprovare
+      const again = [...$app.querySelectorAll("[data-take]")].find((x) => x.dataset.take === doseId);
+      if (again) { again.disabled = false; again.scrollIntoView({ block: "end" }); }
+      else scrollTo(0, 0);
+    });
+    document.body.appendChild(o);
+  }
+
   function startMom() {
+    addEventListener("online", momRefresh);
+    addEventListener("resize", fitCard);
     $app.addEventListener("click", async (ev) => {
       const take = ev.target.closest("[data-take]");
       if (take) {
@@ -196,7 +255,7 @@
           await momRefresh();
         } catch (_) {
           take.disabled = false;
-          toast("Non funziona. Riprova tra poco.");
+          momOops(take.dataset.take);
         }
         return;
       }
@@ -495,6 +554,27 @@
     $app.innerHTML = `<p class="big-msg">Il link non è giusto.<br>Chiedi a Ivan.</p>`;
   }
 
+  // Aggiornamento automatico: l'app installata può restare aperta per giorni e non ricaricarsi mai.
+  // Controlla version.json (mai dalla copia salvata) e, se è uscita una versione nuova, si ricarica da sola.
+  let updateWaiting = false; // c'è una versione nuova, ma si aspetta che la schermata sia tranquilla
+  async function checkVersion() {
+    try {
+      const r = await fetch("version.json?t=" + Date.now(), { cache: "no-store" });
+      if (!r.ok) return;
+      const v = (await r.json()).v;
+      if (!v || v === VERSION) return;
+      // non interrompe chi sta facendo qualcosa: mai con una medicina da prendere sullo schermo
+      updateWaiting = true;
+      if (editing || momData?.pending?.length || document.querySelector(".oops, .bravo")) return;
+      // un solo tentativo ogni 11 minuti per versione: il telefono può tenere i file vecchi per 10 minuti
+      let last = {};
+      try { last = JSON.parse(sessionStorage.getItem("pillolapp_upd") || "{}"); } catch (_) {}
+      if (last.v === v && Date.now() - last.t < 11 * 60000) return;
+      sessionStorage.setItem("pillolapp_upd", JSON.stringify({ v, t: Date.now() }));
+      location.reload();
+    } catch (_) {}
+  }
+
   async function start() {
     if (!API) return ($app.innerHTML = `<p class="big-msg">App non ancora collegata.</p>`);
     if (!K) return badLink();
@@ -525,8 +605,10 @@
       if (e.data?.type === "refresh") hello.role === "admin" ? adminRefresh() : momRefresh();
     });
     document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "visible") hello.role === "admin" ? adminRefresh() : momRefresh();
+      if (document.visibilityState === "visible") { hello.role === "admin" ? adminRefresh() : momRefresh(); checkVersion(); }
     });
+    checkVersion();
+    setInterval(checkVersion, 30 * 60000);
 
     hello.role === "admin" ? startAdmin() : startMom();
   }

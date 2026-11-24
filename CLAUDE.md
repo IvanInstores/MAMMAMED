@@ -25,7 +25,8 @@ Regole pratiche:
 ## Come si pubblicano le modifiche
 | Cosa modifichi | Come va online |
 |---|---|
-| App (`index.html`, `app.js`, `style.css`, `sw.js`, `manifest.webmanifest`, `icons/`) | `git commit` + `git push` sul ramo: GitHub Pages si aggiorna da solo in 1-2 minuti |
+| App (`index.html`, `app.js`, `style.css`, `sw.js`, `version.json`, `manifest.webmanifest`, `icons/`) | `git commit` + `git push` sul ramo: GitHub Pages si aggiorna da solo in 1-2 minuti |
+| **Numero di versione** | A ogni pubblicazione dell'app va cambiato in **due punti con lo stesso valore**: `VERSION` in `app.js` e `v` in `version.json` (formato `AAAA-MM-GG.n`). Senza, i telefoni con l'app aperta restano sulla versione vecchia. Dire sempre a Ivan il numero pubblicato |
 | Server (`supabase/functions/api/index.ts`) | Il push non basta: va ripubblicata la funzione `api` su Supabase, **con verifica JWT disattivata** (il server controlla da solo le chiavi) |
 | Database | Nuovo file numerato in `supabase/migrations/` (es. `005_...sql`), da eseguire anche su Supabase. Mai modificare una migrazione già eseguita |
 
@@ -47,3 +48,6 @@ Regole pratiche:
 ## Regole per i testi dell'app
 - Sempre in italiano, linguaggio semplicissimo.
 - Lato mamma: testi e immagini molto grandi e leggibili, pochi elementi, un solo tasto per confermare.
+- Lato mamma: la mamma non scorre. Il tasto verde deve essere sempre visibile e nessuna parte della scheda deve finire sotto il tasto.
+- Quando qualcosa non va, il messaggio dice cosa fare: di norma "Chiama Ivan."
+- Modifiche grafiche: prima si mostrano a Ivan le schermate "prima e dopo" con dati finti (telefono piccolo e normale), si pubblica solo dopo il suo ok.

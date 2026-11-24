@@ -12,6 +12,7 @@ App semplicissima: la mamma riceve l'avviso (nome, quantità, tipo, foto) e conf
 | `index.html`, `app.js`, `style.css` | GitHub Pages | L'app (stessa pagina per mamma e Ivan: cambia il link) |
 | `sw.js` | GitHub Pages | Riceve gli avvisi anche ad app chiusa |
 | `config.js` | GitHub Pages | Indirizzo del server |
+| `version.json` | GitHub Pages | Numero di versione pubblicato (uguale a `VERSION` in `app.js`) |
 | `supabase/migrations/` | Supabase | Tabelle + controllo ogni minuto |
 | `supabase/functions/api/` | Supabase | Server: salva i dati e manda gli avvisi |
 
@@ -23,6 +24,10 @@ App semplicissima: la mamma riceve l'avviso (nome, quantità, tipo, foto) e conf
 - Fine terapia (facoltativa): dopo quella data, compresa, la medicina non manda più avvisi.
 - Stessa medicina più volte al giorno: una riga per ogni assunzione, ognuna con il suo orario e la sua quantità.
 - Cambio di indirizzo: aprendo l'app al nuovo indirizzo si spengono da soli gli avvisi rimasti legati a qualsiasi indirizzo vecchio (niente notifiche doppie).
+- Senza connessione la schermata della mamma lo dice con un riquadro rosso ("Manca la connessione… Chiama Ivan.") e non afferma più che non c'è niente da prendere.
+- Se la conferma non parte compare un errore a tutto schermo; con "HO CAPITO" si torna al tasto verde per riprovare.
+- La scheda della medicina sta tutta nello schermo con il tasto verde sempre visibile: se serve si rimpiccioliscono la foto e poi le scritte.
+- Aggiornamento automatico: l'app controlla `version.json` e si ricarica da sola quando esce una versione nuova, mai mentre c'è una medicina da prendere sullo schermo. Versione attuale: `2026-11-24.1`.
 - Fuso orario: Italia. Nessuna password: si entra con due link segreti (uno per Ivan, uno per la mamma).
 
 ## Installazione (una volta sola)

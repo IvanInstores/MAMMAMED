@@ -1,7 +1,7 @@
 # PASSAGGIO – PillolAPP
 
 Documento di consegna per chi riparte da zero, senza la conversazione in cui il progetto è nato.
-Ultimo aggiornamento: 23 novembre 2026.
+Ultimo aggiornamento: 24 novembre 2026.
 
 ---
 
@@ -47,6 +47,7 @@ Requisiti fissati da Ivan: linguaggio semplicissimo, tutto in italiano, testi e 
 | `style.css` | Stile. Sezione "MAMMA" con caratteri molto grandi, sezione "IVAN" per il pannello |
 | `sw.js` | Service worker: riceve gli avvisi ad app chiusa e gestisce il tasto "L'HO PRESA" nella notifica |
 | `config.js` | Indirizzo del server (già compilato) |
+| `version.json` | Numero di versione pubblicato. Deve essere uguale a `VERSION` in `app.js`: l'app lo controlla per aggiornarsi da sola |
 | `manifest.webmanifest`, `icons/` | Dati e icone per installare l'app sulla schermata Home |
 | `supabase/functions/api/index.ts` | Il server: salva i dati, calcola gli avvisi, spedisce le notifiche |
 | `supabase/migrations/001_init.sql` | Tabelle, chiavi segrete iniziali, funzioni `generate_doses` e `today_schedule` |
@@ -117,7 +118,7 @@ Non c'è niente da avviare: sito e server sono già pubblicati. Basta aprire il 
 ### Pubblicare una modifica
 | Cosa modifichi | Come va online |
 |---|---|
-| App (`index.html`, `app.js`, `style.css`, `sw.js`) | `git commit` + `git push` sul ramo: GitHub Pages si aggiorna da solo in 1-2 minuti |
+| App (`index.html`, `app.js`, `style.css`, `sw.js`) | Cambia il numero di versione in `app.js` (`VERSION`) e in `version.json` (stesso valore), poi `git commit` + `git push` sul ramo: GitHub Pages si aggiorna da solo in 1-2 minuti e i telefoni si ricaricano da soli |
 | Server (`supabase/functions/api/index.ts`) | Va ripubblicata la funzione `api` su Supabase, **con verifica JWT disattivata** (il server controlla da solo le chiavi) |
 | Database | Nuovo file in `supabase/migrations/` da eseguire su Supabase (SQL Editor) |
 
@@ -140,8 +141,16 @@ Non c'è niente da avviare: sito e server sono già pubblicati. Basta aprire il 
 - Il 23/11/2026 il telefono di Ivan era stato ricollegato a `/pillolapp/` (vecchia icona tolta, app installata da quel link) e la notifica di prova "Manda una prova a me" era arrivata **una sola volta**: la pulizia automatica degli avvisi del vecchio indirizzo `/MAMMAMED/` funzionava. Quel collegamento è stato poi sostituito da quello a `/PillolAPP/` (riga sotto).
 - Pulizia allargata (23/11/2026): `app.js` ora spegne gli avvisi legati a qualsiasi indirizzo diverso da quello attuale, quindi anche `/pillolapp/`. Provata in locale con un browser automatico (un indirizzo vecchio finto viene spento, quello attuale resta).
 - Telefono di Ivan ricollegato a `/PillolAPP/` (23/11/2026, sera): vecchia icona tolta, app installata dal nuovo indirizzo, "Manda una prova a me" arrivata **una sola volta**. La pulizia allargata funziona anche sul telefono.
+- **Primo giro di miglioramenti alla schermata della mamma (24/11/2026, versione `2026-11-24.1`)**, solo app, server non toccato:
+  - riquadro rosso "Manca la connessione… Chiama Ivan." quando l'aggiornamento non riesce; in quel caso sparisce "Adesso non devi prendere niente";
+  - con una medicina da prendere: ora e data piccole su una riga, titolo su una riga, tasto verde sempre visibile; la scheda si adatta allo schermo (prima rimpicciolisce la foto, poi le scritte) così nulla finisce sotto il tasto;
+  - errore a tutto schermo "Non è stata segnata" se la conferma non parte; "HO CAPITO" riporta al tasto verde;
+  - nome della prossima medicina nella schermata tranquilla; testi di aiuto che finiscono con "Chiama Ivan."; niente trattino nei nomi lunghi;
+  - aggiornamento automatico con `version.json`.
+  - Provato in locale con browser automatico e server finto su schermi 360×640 e 412×892 (anche con nome su tre righe e nota su due). **Non provato su un telefono vero né sul sito vero.**
 
 ### In corso
+- **Verifica della versione `2026-11-24.1` sul sito vero e sul telefono di Ivan.** Essendo la prima versione con l'aggiornamento automatico, questa volta l'app va chiusa del tutto e riaperta (se serve, di nuovo dopo 10 minuti). Dalla prossima pubblicazione si aggiorna da sola.
 - **Telefono della mamma non ancora collegato** (si farà quando Ivan avrà il suo telefono in mano). Finché non si fa, a lei non arriva nessun avviso. Passaggi (Android, Chrome):
   1. Dal pannello di Ivan: "Invia il link alla mamma".
   2. Sul suo telefono aprire il link con Chrome.
@@ -157,6 +166,9 @@ Non c'è niente da avviare: sito e server sono già pubblicati. Basta aprire il 
 - Costo del progetto Supabase: da controllare nel pannello che sia sul piano gratuito.
 
 ### Manca / idee proposte e non fatte
+- **Secondo giro grafica (deciso, da fare a parte)**: icone Lucide in SVG al posto delle emoji; elenco "Le medicine di oggi" più leggibile; schermata che non viene ridisegnata tutta ogni minuto.
+- **Rimedio al tocco sbagliato (deciso, da fare a parte perché tocca il server)**: tasto "HO SBAGLIATO" dopo "Brava!".
+- Scartato da Ivan: lettura vocale e uso da tastiera.
 - Riepilogo settimanale via email (prese e dimenticate).
 - Avviso "scorta in esaurimento" con conteggio delle compresse.
 - Un secondo familiare che riceve gli allarmi.
@@ -164,6 +176,9 @@ Non c'è niente da avviare: sito e server sono già pubblicati. Basta aprire il 
 - Prove automatiche salvate nell'archivio (quelle fatte finora erano script temporanei, non conservati).
 
 ### Limiti noti
+- Su schermi molto piccoli (320×568) con nome lungo e nota lunga insieme, l'ultima riga della nota finisce sotto il tasto verde. Meglio tenere le note brevi.
+- Con due medicine alla stessa ora, solo la prima scheda sta tutta nello schermo: la seconda si vede scorrendo.
+- Aggiornamento automatico: il telefono può tenere i file vecchi per circa 10 minuti (memoria di GitHub Pages), quindi la versione nuova arriva entro 10-40 minuti dalla pubblicazione, non subito.
 - L'avviso arriva solo se il telefono è acceso e connesso. Su Samsung e Xiaomi il risparmio batteria può ritardare le notifiche.
 - Non è un dispositivo medico: l'allarme a Ivan è una rete di sicurezza, non una garanzia.
 - Se si modifica una medicina, gli orari già passati di quel giorno non generano più avvisi fino al giorno dopo.
@@ -193,6 +208,10 @@ Non c'è niente da avviare: sito e server sono già pubblicati. Basta aprire il 
 | Più assunzioni al giorno: una riga per assunzione con orario e quantità propri | Richiesta di Ivan: la stessa medicina può avere dosi diverse (es. 1 compressa al mattino, mezza alla sera) |
 | Conferma anche dal tasto dentro la notifica (Android) | "Un clic" come richiesto; se la chiamata fallisce si apre l'app |
 | Ivan può segnare o annullare una conferma dal pannello | Per correggere errori o registrare una conferma avuta al telefono |
+| L'app si ricarica da sola quando `version.json` cambia (24/11/2026) | Un'app installata può restare aperta per giorni e non prendere mai la versione nuova. Non si ricarica mentre c'è una medicina da prendere, un messaggio a schermo o il modulo medicina aperto: aspetta che la schermata torni tranquilla |
+| Con una medicina da prendere la scheda si adatta allo schermo invece di far scorrere (24/11/2026) | Richiesta di Ivan: la mamma non scorre, e la nota è un'istruzione su come prendere la medicina |
+| Errore di conferma a tutto schermo con tasto "HO CAPITO" (24/11/2026) | Una scritta piccola che sparisce da sola lei non la vede |
+| Modifiche grafiche: prima le schermate "prima e dopo" con dati finti, poi l'ok di Ivan, poi la pubblicazione (24/11/2026) | Il ramo è anche il sito in uso: pubblicare è mandare la modifica sui telefoni |
 | Si pubblica solo su `claude/medicine-reminder-app-q924p9`; il ramo locale della sessione cloud resta locale (23/11/2026) | Scelta di Ivan: un solo ramo su GitHub, che è anche quello del sito |
 
 ---
