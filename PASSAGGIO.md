@@ -148,9 +148,16 @@ Non c'è niente da avviare: sito e server sono già pubblicati. Basta aprire il 
   - nome della prossima medicina nella schermata tranquilla; testi di aiuto che finiscono con "Chiama Ivan."; niente trattino nei nomi lunghi;
   - aggiornamento automatico con `version.json`.
   - Provato in locale con browser automatico e server finto su schermi 360×640 e 412×892 (anche con nome su tre righe e nota su due). **Non provato su un telefono vero né sul sito vero.**
+- **Secondo giro di miglioramenti alla schermata della mamma (24/11/2026, versione `2026-11-24.2`)**, solo app, server non toccato:
+  - icone Lucide (SVG copiati in `app.js`, licenza ISC) al posto delle emoji, lato mamma: spunta sul tasto verde, faccina piena verde nella schermata tranquilla, spunta verde su disco bianco dopo "L'HO PRESA", triangolo di avviso pieno, campanella piena;
+  - elenco "Le medicine di oggi" a riquadri colorati: verde "Presa", arancione "Da prendere", grigio "Più tardi", grigio "Non segnata";
+  - regola dell'elenco: arancione "Da prendere" solo se in alto c'è la scheda con il tasto verde; una dose scaduta (non più in attesa) è "Non segnata"; una dose mai avvisata (medicina aggiunta o modificata dopo quell'orario) non compare;
+  - niente sfarfallio: l'ora si aggiorna da sola, il resto della schermata (foto compresa) si ridisegna solo se cambia.
+  - Provato in locale con browser automatico e server finto su schermi 360×640 e 412×892. **Non provato su un telefono vero né sul sito vero.**
+  - Non toccati: il pannello di Ivan (ha ancora le emoji) e il tasto "✅ L'HO PRESA" dentro la notifica di sistema (lì le icone SVG non si possono usare).
 
 ### In corso
-- **Verifica della versione `2026-11-24.1` sul sito vero e sul telefono di Ivan.** Essendo la prima versione con l'aggiornamento automatico, questa volta l'app va chiusa del tutto e riaperta (se serve, di nuovo dopo 10 minuti). Dalla prossima pubblicazione si aggiorna da sola.
+- **Verifica della versione `2026-11-24.2` sul sito vero e sui telefoni.** Chi ha già la `2026-11-24.1` si aggiorna da solo; chi ha una versione più vecchia deve chiudere del tutto l'app e riaprirla.
 - **Telefono della mamma non ancora collegato** (si farà quando Ivan avrà il suo telefono in mano). Finché non si fa, a lei non arriva nessun avviso. Passaggi (Android, Chrome):
   1. Dal pannello di Ivan: "Invia il link alla mamma".
   2. Sul suo telefono aprire il link con Chrome.
@@ -166,8 +173,12 @@ Non c'è niente da avviare: sito e server sono già pubblicati. Basta aprire il 
 - Costo del progetto Supabase: da controllare nel pannello che sia sul piano gratuito.
 
 ### Manca / idee proposte e non fatte
-- **Secondo giro grafica (deciso, da fare a parte)**: icone Lucide in SVG al posto delle emoji; elenco "Le medicine di oggi" più leggibile; schermata che non viene ridisegnata tutta ogni minuto.
+- **PRIORITÀ, prima di aggiungere medicine con più orari al giorno — finestra per la dose in ritardo (tocca il server, da fare insieme al tasto "HO SBAGLIATO")**. Oggi una dose non confermata resta "da prendere" per 12 ore fisse, uguali per tutte le medicine (`PENDING_HOURS` nel server): con due dosi al giorno, quella delle 08:00 resta confermabile fino alle 20:00, cioè fino all'ora della successiva. Deciso da Ivan il 24/11/2026:
+  - la finestra deve chiudersi **al più tardi all'orario della dose successiva della stessa medicina**;
+  - deve essere **impostabile per ogni medicina** (i valori li decide Ivan con il medico);
+  - fino ad allora non si tocca.
 - **Rimedio al tocco sbagliato (deciso, da fare a parte perché tocca il server)**: tasto "HO SBAGLIATO" dopo "Brava!".
+- Pannello di Ivan con le icone Lucide al posto delle emoji (proposto, non deciso).
 - Scartato da Ivan: lettura vocale e uso da tastiera.
 - Riepilogo settimanale via email (prese e dimenticate).
 - Avviso "scorta in esaurimento" con conteggio delle compresse.
@@ -212,6 +223,9 @@ Non c'è niente da avviare: sito e server sono già pubblicati. Basta aprire il 
 | Con una medicina da prendere la scheda si adatta allo schermo invece di far scorrere (24/11/2026) | Richiesta di Ivan: la mamma non scorre, e la nota è un'istruzione su come prendere la medicina |
 | Errore di conferma a tutto schermo con tasto "HO CAPITO" (24/11/2026) | Una scritta piccola che sparisce da sola lei non la vede |
 | Modifiche grafiche: prima le schermate "prima e dopo" con dati finti, poi l'ok di Ivan, poi la pubblicazione (24/11/2026) | Il ramo è anche il sito in uso: pubblicare è mandare la modifica sui telefoni |
+| Icone Lucide in SVG, niente emoji lato mamma (24/11/2026) | Scelta di Ivan: le emoji non gli piacciono e cambiano aspetto da telefono a telefono. Nessuno strumento da installare: gli SVG sono copiati in `app.js` |
+| La spunta vuol dire solo "medicina presa/segnata"; la schermata tranquilla usa la faccina (24/11/2026) | Per non usare lo stesso simbolo con due significati |
+| Nell'elenco: "Da prendere" solo se c'è la scheda con il tasto verde; scaduta = "Non segnata" grigia; mai avvisata = non compare (24/11/2026) | Evita la contraddizione con "Adesso non devi prendere niente". "Non segnata" e non "Non presa": l'app sa solo che il tasto non è stato toccato. Grigia e non rossa per non spingerla a prendere tardi una dose vecchia |
 | Si pubblica solo su `claude/medicine-reminder-app-q924p9`; il ramo locale della sessione cloud resta locale (23/11/2026) | Scelta di Ivan: un solo ramo su GitHub, che è anche quello del sito |
 
 ---

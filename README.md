@@ -27,7 +27,9 @@ App semplicissima: la mamma riceve l'avviso (nome, quantità, tipo, foto) e conf
 - Senza connessione la schermata della mamma lo dice con un riquadro rosso ("Manca la connessione… Chiama Ivan.") e non afferma più che non c'è niente da prendere.
 - Se la conferma non parte compare un errore a tutto schermo; con "HO CAPITO" si torna al tasto verde per riprovare.
 - La scheda della medicina sta tutta nello schermo con il tasto verde sempre visibile: se serve si rimpiccioliscono la foto e poi le scritte.
-- Aggiornamento automatico: l'app controlla `version.json` e si ricarica da sola quando esce una versione nuova, mai mentre c'è una medicina da prendere sullo schermo. Versione attuale: `2026-11-24.1`.
+- Elenco "Le medicine di oggi": verde "Presa", arancione "Da prendere" (solo se in alto c'è la scheda con il tasto verde), grigio "Più tardi", grigio "Non segnata" per una dose scaduta senza conferma.
+- Icone: Lucide (lucide.dev, licenza ISC), copiate come SVG in `app.js`.
+- Aggiornamento automatico: l'app controlla `version.json` e si ricarica da sola quando esce una versione nuova, mai mentre c'è una medicina da prendere sullo schermo. Versione attuale: `2026-11-24.2`.
 - Fuso orario: Italia. Nessuna password: si entra con due link segreti (uno per Ivan, uno per la mamma).
 
 ## Installazione (una volta sola)

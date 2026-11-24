@@ -2,7 +2,7 @@
 (() => {
   const API = window.MAMMAMED_API;
   // versione dell'app: a ogni pubblicazione va cambiata QUI e in version.json (stesso valore)
-  const VERSION = "2026-11-24.1";
+  const VERSION = "2026-11-24.2";
   const $app = document.getElementById("app");
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -103,6 +103,21 @@
     });
   }
 
+  // ---------------------------------------------------------------- icone
+  // Icone Lucide (lucide.dev, licenza ISC), copiate qui come SVG: nessuno strumento da installare.
+  // Sono uguali su tutti i telefoni, a differenza delle emoji.
+  // class="f" = parte piena (colore del testo), class="w" = tratti bianchi sopra la parte piena.
+  const ICONS = {
+    check: '<path d="M20 6 9 17l-5-5"/>',
+    alert: '<path class="f" d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><g class="w"><path d="M12 9v4"/><path d="M12 17h.01"/></g>',
+    smile: '<circle class="f" cx="12" cy="12" r="10"/><g class="w"><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M9 9h.01"/><path d="M15 9h.01"/></g>',
+    clock: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+    alarm: '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3 2 6"/><path d="m22 6-3-3"/><path d="M6.38 18.7 4 21"/><path d="M17.64 18.67 20 21"/>',
+    minus: '<circle cx="12" cy="12" r="10"/><path d="M8 12h8"/>',
+    bell: '<path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M22 8c0-2.3-.8-4.3-2-6"/><path class="f" d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/><path d="M4 2C2.8 3.7 2 5.7 2 8"/>',
+  };
+  const ico = (name) => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${ICONS[name]}</svg>`;
+
   // ================================================================ MAMMA
   let momLast = "";
   let momData = null;
@@ -119,7 +134,7 @@
     if (Notification.permission === "denied") {
       return `<div class="hint">Gli avvisi sono spenti.<br><b>Chiama Ivan.</b></div>`;
     }
-    return `<button class="btn-alert" id="enable">🔔 TOCCA QUI PER ATTIVARE GLI AVVISI</button>`;
+    return `<button class="btn-alert" id="enable">${ico("bell")} TOCCA QUI PER ATTIVARE GLI AVVISI</button>`;
   }
 
   function renderMom(force) {
@@ -129,15 +144,11 @@
       if (momOffline) $app.innerHTML = `<p class="big-msg">Manca la connessione.<br>Riprovo da solo…</p>`;
       return;
     }
-    const key = JSON.stringify([d, pushOn, momOffline, now.getHours(), now.getMinutes()]);
-    if (!force && key === momLast) return;
-    momLast = key;
-
     const clock = now.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
     const date = now.toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" });
-    let h = `<div class="mom${d.pending.length ? " busy" : ""}"><div class="top"><div class="clock">${clock}</div><div class="date">${date}</div></div>`;
+    let h = "";
     if (momOffline) {
-      h += `<div class="offline" role="alert"><div class="t">⚠️ Manca la connessione</div>
+      h += `<div class="offline" role="alert"><div class="t">${ico("alert")} Manca la connessione</div>
         Non so dirti se è ora di una medicina.<br><b>Chiama Ivan.</b></div>`;
     }
     h += momAlertBlock();
@@ -152,32 +163,57 @@
           <div class="name">${esc(p.name)}</div>
           <div class="qty">${esc(p.dose)}${p.kind ? `<small>${esc(p.kind)}</small>` : ""}</div>
           ${p.note ? `<div class="note">${esc(p.note)}</div>` : ""}
-          <button class="btn-take" data-take="${esc(p.id)}">✅ L'HO PRESA</button>
+          <button class="btn-take" data-take="${esc(p.id)}">${ico("check")}<span>L'HO PRESA</span></button>
         </section>`;
       }
     } else if (!momOffline) {
       const next = d.today.find((t) => !t.taken_at && new Date(t.due_at) > now);
-      h += `<div class="calm"><div class="face">😊</div><div class="t">Adesso non devi prendere niente</div>
+      h += `<div class="calm"><div class="face">${ico("smile")}</div><div class="t">Adesso non devi prendere niente</div>
         ${next
           ? `<div class="next">La prossima medicina è alle<b>ore ${esc(next.time)}</b><span class="nextname">${esc(next.name)}</span></div>`
-          : `<div class="next">Per oggi hai finito. Brava!</div>`}</div>`;
+          : `<div class="next">${d.today.every((t) => t.taken_at) ? "Per oggi hai finito. Brava!" : "Per oggi non c'è altro."}</div>`}</div>`;
     }
 
-    if (d.today.length) {
+    // Elenco di oggi. Regola: arancione "Da prendere" SOLO se in alto c'è la scheda con il tasto verde.
+    //  - dose passata e mai avvisata (medicina aggiunta o modificata dopo quell'orario): non si mostra
+    //  - dose passata e non più in attesa (scaduta): grigia "Non segnata" (l'app non sa se l'ha presa)
+    const waiting = new Set(d.pending.map((p) => p.id));
+    const rows = [];
+    for (const t of d.today) {
+      const late = now - new Date(t.due_at);
+      if (t.taken_at) rows.push([t, "done", "check", "Presa"]);
+      else if (late < 0) rows.push([t, "later", "clock", "Più tardi"]);
+      else if (waiting.has(t.dose_id)) rows.push([t, "todo", "alarm", "Da prendere"]);
+      else if (t.dose_id) rows.push([t, "missed", "minus", "Non segnata"]);
+      else if (late < 120000) rows.push([t, "later", "clock", "Più tardi"]); // il server la sta per creare
+    }
+    if (rows.length) {
       h += `<h2>Le medicine di oggi</h2><ul class="daylist">`;
-      for (const t of d.today) {
-        const due = new Date(t.due_at) <= now;
-        const st = t.taken_at ? ["✅", "Presa"] : due ? ["⏰", "Da prendere"] : ["", "Più tardi"];
-        h += `<li><span class="h">${esc(t.time)}</span>
-          <span>${esc(t.name)}<small>${esc(t.dose)} · ${st[1]}</small></span>
-          <span class="s">${st[0]}</span></li>`;
+      for (const [t, ...st] of rows) {
+        h += `<li class="${st[0]}"><span class="h">${esc(t.time)}</span>
+          <span class="what">${esc(t.name)}<small>${esc(t.dose)}</small></span>
+          <span class="st">${ico(st[1])} ${st[2]}</span></li>`;
       }
       h += `</ul>`;
     }
-    h += `</div>`;
-    $app.innerHTML = h;
+
+    // Niente sfarfallio: la schermata non viene ridisegnata tutta ogni minuto.
+    // L'ora si aggiorna da sola; il resto (foto compresa) si ridisegna solo se cambia davvero.
+    let root = $app.querySelector(".mom");
+    if (!root) {
+      $app.innerHTML = `<div class="mom"><div class="top"><div class="clock"></div><div class="date"></div></div><div class="body"></div></div>`;
+      root = $app.querySelector(".mom");
+      momLast = "";
+    }
+    root.classList.toggle("busy", d.pending.length > 0);
+    const setText = (q, v) => { const e = root.querySelector(q); if (e.textContent !== v) e.textContent = v; };
+    setText(".clock", clock);
+    setText(".date", date);
+    if (h === momLast) return;
+    momLast = h;
+    root.querySelector(".body").innerHTML = h;
     fitCard();
-    $app.querySelector(".card img")?.addEventListener("load", fitCard);
+    root.querySelector(".card img")?.addEventListener("load", fitCard);
   }
 
   // La prima scheda deve stare tutta nello schermo, tasto verde compreso, senza scorrere:
@@ -224,7 +260,7 @@
     const o = document.createElement("div");
     o.className = "oops";
     o.setAttribute("role", "alertdialog");
-    o.innerHTML = `<div class="t">⚠️ Non è stata segnata</div>
+    o.innerHTML = `<div class="t">${ico("alert")} Non è stata segnata</div>
       <p>Tocca di nuovo il tasto verde.</p><p>Se non funziona, <b>chiama Ivan.</b></p>
       <button class="btn-oops">HO CAPITO</button>`;
     o.querySelector("button").addEventListener("click", () => {
@@ -248,7 +284,7 @@
           await api("confirm", { dose_id: take.dataset.take });
           const b = document.createElement("div");
           b.className = "bravo";
-          b.innerHTML = `<span>👍</span>Brava!`;
+          b.innerHTML = `<div class="disc">${ico("check")}</div>Brava!`;
           document.body.appendChild(b);
           setTimeout(() => b.remove(), 2500);
           closeNotifications();
@@ -261,7 +297,7 @@
       }
       if (ev.target.closest("#enable")) {
         try { pushOn = await syncPush(true); } catch (_) { pushOn = false; }
-        if (pushOn) toast("Avvisi attivati 👍");
+        if (pushOn) toast("Avvisi attivati");
         renderMom(true);
       }
     });

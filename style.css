@@ -44,7 +44,7 @@ img { max-width: 100%; }
 .card .qty small { display: block; font-size: 24px; font-weight: 600; color: var(--soft); }
 .card .note { font-size: 28px; margin-top: 10px; }
 .btn-take {
-  display: block; width: 100%; min-height: 120px; margin-top: 20px;
+  width: 100%; min-height: 120px; margin-top: 20px;
   background: var(--green); color: #fff; font-size: 40px; border-radius: 24px;
   box-shadow: 0 6px 0 #064d1e, 0 0 0 8px var(--orange-bg);
   /* resta sempre visibile in basso finché la sua medicina è sullo schermo */
@@ -60,9 +60,9 @@ img { max-width: 100%; }
 .card.tight .note { font-size: 26px; margin-top: 6px; line-height: 1.2; }
 .card.tight .btn-take { min-height: 96px; margin-top: 12px; font-size: 36px; }
 .btn-take:active { transform: translateY(4px); box-shadow: 0 2px 0 #064d1e, 0 0 0 8px var(--orange-bg); }
-.calm { text-align: center; background: var(--green-bg); border-radius: 24px; padding: 30px 18px; }
+.calm { text-align: center; background: var(--green-bg); border-radius: 24px; padding: 22px 18px 24px; }
 .calm .face { font-size: 80px; line-height: 1; }
-.calm .t { font-size: 38px; font-weight: 800; color: var(--green); margin: 10px 0; line-height: 1.15; }
+.calm .t { font-size: 38px; font-weight: 800; color: var(--green); margin: 6px 0 8px; line-height: 1.12; }
 .calm .next { font-size: 30px; }
 .calm .next b { display: block; font-size: 40px; }
 .calm .nextname { display: block; font-size: 34px; font-weight: 700; overflow-wrap: break-word; }
@@ -87,14 +87,36 @@ img { max-width: 100%; }
   background: var(--yellow); color: #111; font-size: 34px; border: 4px solid #111; margin-bottom: 24px;
 }
 .hint { background: #eef4ff; border: 3px solid var(--blue); border-radius: 18px; padding: 16px; margin-bottom: 24px; font-size: 24px; }
+.ico { width: 1em; height: 1em; flex: none; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; vertical-align: -0.14em; }
+.ico .f { fill: currentColor; }
+.ico .w { stroke: #fff; }
+.offline .t .ico, .oops .t .ico { font-size: 1.25em; }
+.btn-alert .ico { font-size: 1.2em; }
+.btn-take { display: flex; align-items: center; justify-content: center; gap: 12px; }
+.btn-take .ico { font-size: 1.15em; stroke-width: 3.2; }
+/* faccina piena: disco verde con i tratti bianchi */
+.calm .face { line-height: 0; margin-bottom: 8px; }
+.calm .face .ico { color: var(--green); stroke-width: 2; font-size: min(120px, 26vw); }
+.calm .face .ico .w { stroke-width: 2.4; }
+.daylist .st .ico { font-size: 1.3em; }
+/* conferma riuscita: spunta verde su disco bianco */
+.bravo .disc { width: 190px; height: 190px; border-radius: 50%; background: #fff; color: var(--green); display: flex; align-items: center; justify-content: center; margin-bottom: 22px; }
+.bravo .disc .ico { font-size: 124px; stroke-width: 3.4; }
+/* elenco di oggi: ogni riga dice il suo stato con colore, simbolo e parola */
 .daylist { list-style: none; padding: 0; margin: 0; }
 .daylist li {
-  display: grid; grid-template-columns: 4.2em 1fr auto; gap: 10px; align-items: center;
-  padding: 14px 4px; border-bottom: 2px solid var(--line); font-size: 28px;
+  display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; align-items: center;
+  padding: 14px 16px; margin-bottom: 12px; border-radius: 18px; font-size: 28px;
+  border: 3px solid var(--line); background: #f4f4f4;
 }
-.daylist .h { font-weight: 800; }
-.daylist .s { font-size: 36px; }
-.daylist small { display: block; font-size: 22px; color: var(--soft); }
+.daylist .h { font-weight: 800; font-size: 30px; }
+.daylist .what { font-weight: 700; overflow-wrap: anywhere; }
+.daylist small { display: block; font-size: 24px; font-weight: 400; color: var(--soft); }
+.daylist .st { grid-column: 1 / -1; font-size: 26px; font-weight: 800; display: flex; align-items: center; gap: 8px; color: var(--soft); }
+.daylist li.done { background: var(--green-bg); border-color: var(--green); }
+.daylist li.done .st { color: var(--green); }
+.daylist li.todo { background: var(--orange-bg); border-color: var(--orange); border-width: 5px; }
+.daylist li.todo .st { color: var(--orange); }
 
 /* ---------- IVAN: pannello ---------- */
 .admin h1 { font-size: 28px; margin: 0 0 4px; }

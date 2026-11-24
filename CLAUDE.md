@@ -50,4 +50,6 @@ Regole pratiche:
 - Lato mamma: testi e immagini molto grandi e leggibili, pochi elementi, un solo tasto per confermare.
 - Lato mamma: la mamma non scorre. Il tasto verde deve essere sempre visibile e nessuna parte della scheda deve finire sotto il tasto.
 - Quando qualcosa non va, il messaggio dice cosa fare: di norma "Chiama Ivan."
+- Lato mamma niente emoji: solo icone Lucide in SVG (in `ICONS` dentro `app.js`). La spunta vuol dire solo "medicina presa/segnata".
+- L'app dice solo quello che sa: "Non segnata", non "Non presa".
 - Modifiche grafiche: prima si mostrano a Ivan le schermate "prima e dopo" con dati finti (telefono piccolo e normale), si pubblica solo dopo il suo ok.
