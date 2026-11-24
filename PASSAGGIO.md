@@ -1,7 +1,7 @@
 # PASSAGGIO – PillolAPP
 
 Documento di consegna per chi riparte da zero, senza la conversazione in cui il progetto è nato.
-Ultimo aggiornamento: 24 novembre 2026.
+Ultimo aggiornamento: 24 novembre 2026 (giro server progettato).
 
 ---
 
@@ -157,6 +157,7 @@ Non c'è niente da avviare: sito e server sono già pubblicati. Basta aprire il 
   - Non toccati: il pannello di Ivan (ha ancora le emoji) e il tasto "✅ L'HO PRESA" dentro la notifica di sistema (lì le icone SVG non si possono usare).
 
 ### In corso
+- **25/11/2026 (compleanno della mamma): Ivan collega il telefono della mamma.** Passaggi nella voce sotto. Dopo: segnare qui l'esito (prova arrivata una sola volta? tasto verde provato?).
 - **Verifica della versione `2026-11-24.2` sul sito vero e sui telefoni.** Chi ha già la `2026-11-24.1` si aggiorna da solo; chi ha una versione più vecchia deve chiudere del tutto l'app e riaprirla.
 - **Telefono della mamma non ancora collegato** (si farà quando Ivan avrà il suo telefono in mano). Finché non si fa, a lei non arriva nessun avviso. Passaggi (Android, Chrome):
   1. Dal pannello di Ivan: "Invia il link alla mamma".
@@ -173,11 +174,15 @@ Non c'è niente da avviare: sito e server sono già pubblicati. Basta aprire il 
 - Costo del progetto Supabase: da controllare nel pannello che sia sul piano gratuito.
 
 ### Manca / idee proposte e non fatte
-- **PRIORITÀ, prima di aggiungere medicine con più orari al giorno — finestra per la dose in ritardo (tocca il server, da fare insieme al tasto "HO SBAGLIATO")**. Oggi una dose non confermata resta "da prendere" per 12 ore fisse, uguali per tutte le medicine (`PENDING_HOURS` nel server): con due dosi al giorno, quella delle 08:00 resta confermabile fino alle 20:00, cioè fino all'ora della successiva. Deciso da Ivan il 24/11/2026:
-  - la finestra deve chiudersi **al più tardi all'orario della dose successiva della stessa medicina**;
-  - deve essere **impostabile per ogni medicina** (i valori li decide Ivan con il medico);
-  - fino ad allora non si tocca.
-- **Rimedio al tocco sbagliato (deciso, da fare a parte perché tocca il server)**: tasto "HO SBAGLIATO" dopo "Brava!".
+- **PROSSIMO LAVORO: "giro server" (progettato e approvato da Ivan il 24/11/2026, NON ancora fatto).** Tre novità insieme, perché toccano tutte server e database. Da fare **dopo** aver collegato il telefono della mamma, in un pomeriggio senza dosi vicine. Prima di pubblicare: prove in locale e tavole definitive "prima e dopo" a Ivan, poi il suo ok.
+  1. **Momenti della giornata.** Nel pannello Ivan imposta 4 momenti fissi con l'orario del pasto: Colazione 08:00, Pranzo 12:30, Cena 19:30, Prima di dormire 22:00 (orari modificabili, **niente orari diversi nel fine settimana**). Ogni volta al giorno di una medicina è legata a un momento (Prima di / A / Dopo colazione, pranzo, cena; oppure Prima di dormire) **oppure** a un orario preciso, come oggi. "Prima di…" arriva **15 minuti prima** del pasto, "A…" all'ora del pasto, "Dopo…" **30 minuti dopo** (15 e 30 modificabili nel pannello). La mamma vede in grande il momento ("Dopo colazione") invece dell'ora; il titolo dell'avviso diventa il momento.
+  2. **Finestra per segnare in ritardo, per ogni medicina.** Scelta nel modulo: 30 minuti, 1 ora, 2 ore, 4 ore, 8 ore, "fino alla dose successiva (massimo 12 ore)". **Si chiude comunque all'orario della dose successiva della stessa medicina.** Medicine nuove: **2 ore** (è anche quando finiscono i 12 avvisi ripetuti ogni 10 minuti). Medicine già inserite: restano a 12 ore (con la chiusura alla dose successiva) finché Ivan non imposta i valori giusti **dopo aver sentito il medico**. L'allarme a Ivan deve partire anche se la finestra è più corta dei 30 minuti.
+  3. **Tasto HO SBAGLIATO.** Nella schermata "Brava!" (che diventa "Brava! Medicina A segnata" e resta circa 10 secondi) compare **in basso, dopo 1,5 secondi**, il tasto "HO SBAGLIATO – non l'ho presa": **bianco con bordo, ben distinto dal tasto verde** (il ritardo evita il doppio tocco per errore, perché sta dove prima c'era il tasto verde). Vale solo per la mamma, solo sulla sua conferma, solo entro 2 minuti. Riporta la dose a "da prendere" e **fa ripartire gli avvisi**; sul telefono di Ivan la notifica "ha preso la medicina" viene sostituita da "Mamma ha tolto la conferma" (stesso `tag`). Nel pannello la dose mostra "La mamma ha tolto la conferma alle hh:mm".
+  4. **Più medicine nello stesso momento**: schede compatte (foto piccola a sinistra, nome e quantità, tasto verde sotto), così tutti i tasti verdi stanno nello schermo anche sul telefono piccolo.
+  - **Database (nuovo file `005_...sql`, le migrazioni vecchie non si toccano):** tabella `moments` (chiave, nome, orario, pasto sì/no, ordine) con i 4 momenti; in `config` i due valori 15 e 30; in `medicines` le colonne `slots` (per ogni volta: orario preciso **oppure** momento + prima/a/dopo, e quantità) e `late_minutes`; in `doses` le colonne `slot`, `label` (es. "Dopo colazione", salvata quando parte l'avviso), `late_until` (fino a quando si può segnare) e `undone_at`; un vincolo "al massimo una dose al giorno per medicina e momento" (così spostare un momento dopo che l'avviso è partito non manda un secondo avviso); `generate_doses` e `today_schedule` riscritte. Nel server `PENDING_HOURS` viene sostituito da `late_until`; nuove azioni per salvare i momenti e per HO SBAGLIATO.
+  - **Compatibilità:** ogni medicina esistente viene convertita in "orario preciso" con gli stessi orari e quantità: per la mamma non cambia nulla finché Ivan non lega una medicina a un momento. Le colonne vecchie `times` e `time_doses` restano e il server le tiene aggiornate (l'app vecchia funziona finché non si aggiorna da sola, e si può tornare indietro). Ordine di pubblicazione: database → server → app, ogni passo compatibile con il precedente.
+  - **Prove obbligatorie prima di pubblicare:** HO SBAGLIATO riporta la dose a "da prendere" **e fa ripartire l'avviso**; HO SBAGLIATO dopo 2 minuti viene rifiutato; finestra che si chiude alla dose successiva; finestra più corta dei 30 minuti con allarme a Ivan; momento spostato dopo che l'avviso è partito (nessun doppio avviso); medicine esistenti invariate dopo la conversione.
+  - Effetto collaterale accettato: nell'elenco di oggi le righe legate a un momento sono più alte, quindi sul telefono piccolo se ne vedono meno.
 - Pannello di Ivan con le icone Lucide al posto delle emoji (proposto, non deciso).
 - Scartato da Ivan: lettura vocale e uso da tastiera.
 - Riepilogo settimanale via email (prese e dimenticate).
@@ -226,6 +231,10 @@ Non c'è niente da avviare: sito e server sono già pubblicati. Basta aprire il 
 | Icone Lucide in SVG, niente emoji lato mamma (24/11/2026) | Scelta di Ivan: le emoji non gli piacciono e cambiano aspetto da telefono a telefono. Nessuno strumento da installare: gli SVG sono copiati in `app.js` |
 | La spunta vuol dire solo "medicina presa/segnata"; la schermata tranquilla usa la faccina (24/11/2026) | Per non usare lo stesso simbolo con due significati |
 | Nell'elenco: "Da prendere" solo se c'è la scheda con il tasto verde; scaduta = "Non segnata" grigia; mai avvisata = non compare (24/11/2026) | Evita la contraddizione con "Adesso non devi prendere niente". "Non segnata" e non "Non presa": l'app sa solo che il tasto non è stato toccato. Grigia e non rossa per non spingerla a prendere tardi una dose vecchia |
+| Medicine legate a momenti della giornata (Colazione, Pranzo, Cena, Prima di dormire) oltre che a orari precisi (24/11/2026, da fare) | Idea di Ivan: la mamma ragiona per pasti, non per orari. "Prima di" 15 minuti prima e "Dopo" 30 minuti dopo: altrimenti prima e dopo arriverebbero alla stessa ora. 4 momenti fissi, uguali tutti i giorni, per semplicità |
+| Finestra per segnare in ritardo impostabile per medicina, chiusa al più tardi alla dose successiva; 2 ore per le medicine nuove (24/11/2026, da fare) | Con le 12 ore fisse, in una medicina con due dosi al giorno quella del mattino resta confermabile fino all'ora di quella della sera. I valori definitivi li decide Ivan con il medico |
+| HO SBAGLIATO in basso, bianco con bordo, visibile dopo 1,5 secondi, valido 2 minuti (24/11/2026, da fare) | Rimedia a un tocco per errore su "L'HO PRESA" senza rischiare un secondo tocco accidentale; la dose torna "da prendere" e gli avvisi ripartono |
+| Server e database si cambiano tutti insieme in un "giro server", in un pomeriggio senza dosi vicine, dopo aver collegato il telefono della mamma (24/11/2026) | Il server è in uso reale: meno pubblicazioni e lontane dagli orari delle medicine riducono il rischio di far saltare un avviso |
 | Si pubblica solo su `claude/medicine-reminder-app-q924p9`; il ramo locale della sessione cloud resta locale (23/11/2026) | Scelta di Ivan: un solo ramo su GitHub, che è anche quello del sito |
 
 ---
