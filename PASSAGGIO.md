@@ -1,7 +1,7 @@
 # PASSAGGIO – PillolAPP
 
 Documento di consegna per chi riparte da zero, senza la conversazione in cui il progetto è nato.
-Ultimo aggiornamento: 24 novembre 2026 (giro server progettato).
+Ultimo aggiornamento: 25 novembre 2026.
 
 ---
 
@@ -140,6 +140,7 @@ Non c'è niente da avviare: sito e server sono già pubblicati. Basta aprire il 
 - Ivan ha inserito la prima medicina vera.
 - Il 23/11/2026 il telefono di Ivan era stato ricollegato a `/pillolapp/` (vecchia icona tolta, app installata da quel link) e la notifica di prova "Manda una prova a me" era arrivata **una sola volta**: la pulizia automatica degli avvisi del vecchio indirizzo `/MAMMAMED/` funzionava. Quel collegamento è stato poi sostituito da quello a `/PillolAPP/` (riga sotto).
 - Pulizia allargata (23/11/2026): `app.js` ora spegne gli avvisi legati a qualsiasi indirizzo diverso da quello attuale, quindi anche `/pillolapp/`. Provata in locale con un browser automatico (un indirizzo vecchio finto viene spento, quello attuale resta).
+- **Telefono della mamma collegato il 25/11/2026** (il giorno del suo compleanno): Ivan l'ha provato con lei, "funziona alla grande". Da qui in poi gli avvisi le arrivano davvero.
 - Telefono di Ivan ricollegato a `/PillolAPP/` (23/11/2026, sera): vecchia icona tolta, app installata dal nuovo indirizzo, "Manda una prova a me" arrivata **una sola volta**. La pulizia allargata funziona anche sul telefono.
 - **Primo giro di miglioramenti alla schermata della mamma (24/11/2026, versione `2026-11-24.1`)**, solo app, server non toccato:
   - riquadro rosso "Manca la connessione… Chiama Ivan." quando l'aggiornamento non riesce; in quel caso sparisce "Adesso non devi prendere niente";
@@ -157,18 +158,10 @@ Non c'è niente da avviare: sito e server sono già pubblicati. Basta aprire il 
   - Non toccati: il pannello di Ivan (ha ancora le emoji) e il tasto "✅ L'HO PRESA" dentro la notifica di sistema (lì le icone SVG non si possono usare).
 
 ### In corso
-- **25/11/2026 (compleanno della mamma): Ivan collega il telefono della mamma.** Passaggi nella voce sotto. Dopo: segnare qui l'esito (prova arrivata una sola volta? tasto verde provato?).
 - **Verifica della versione `2026-11-24.2` sul sito vero e sui telefoni.** Chi ha già la `2026-11-24.1` si aggiorna da solo; chi ha una versione più vecchia deve chiudere del tutto l'app e riaprirla.
-- **Telefono della mamma non ancora collegato** (si farà quando Ivan avrà il suo telefono in mano). Finché non si fa, a lei non arriva nessun avviso. Passaggi (Android, Chrome):
-  1. Dal pannello di Ivan: "Invia il link alla mamma".
-  2. Sul suo telefono aprire il link con Chrome.
-  3. Menu ⋮ → "Aggiungi a schermata Home", poi aprire l'app **PillolAPP** dalla Home.
-  4. Toccare il tasto giallo "TOCCA QUI PER ATTIVARE GLI AVVISI" → Consenti.
-  5. Impostazioni → App → Chrome → Batteria → "Senza restrizioni".
-  6. Dal pannello: "Manda un avviso di prova alla mamma".
 
 ### Non ancora provato
-- Notifica reale ricevuta sul telefono della mamma, e tasto "L'HO PRESA" dentro la notifica (sul telefono di Ivan la notifica di prova arriva).
+- Tasto "L'HO PRESA" dentro la notifica di sistema (Android), senza aprire l'app: non risulta provato in modo specifico.
 - Giro completo sul server vero con quantità diverse per orario e con fine terapia scaduta (le modifiche sono caricate senza errori, ma verificate solo in locale).
 - Comportamento su iPhone.
 - Costo del progetto Supabase: da controllare nel pannello che sia sul piano gratuito.
